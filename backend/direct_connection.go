@@ -163,8 +163,6 @@ func (dc *DirectConnection) Close() {
 	dc.salt = nil
 	dc.pkgErr = nil
 	dc.closed.Set(true)
-
-	return
 }
 
 // IsClosed check if connection closed
@@ -469,7 +467,7 @@ func (dc *DirectConnection) writeHandshakeResponse41() error {
 
 	dc.capability = capability
 
-	data := make([]byte, length, length)
+	data := make([]byte, length)
 	pos := 0
 
 	// Client capability flags.
@@ -509,7 +507,7 @@ func (dc *DirectConnection) writeHandshakeResponse41() error {
 // Returns SQLError(CRServerGone) if it can't.
 func (dc *DirectConnection) writeComInitDB(db string) error {
 	dc.conn.SetSequence(0)
-	data := make([]byte, len(db)+1, len(db)+1)
+	data := make([]byte, len(db)+1)
 	data[0] = mysql.ComInitDB
 	copy(data[1:], db)
 	if err := dc.writePacket(data); err != nil {
@@ -536,7 +534,7 @@ func (dc *DirectConnection) writeComFieldList(table string, wildcard string) err
 		mysql.LenNullString(table) +
 		mysql.LenNullString(wildcard)
 
-	data := make([]byte, length, length)
+	data := make([]byte, length)
 	pos := 0
 
 	pos = mysql.WriteByte(data, 0, mysql.ComFieldList)
@@ -1027,11 +1025,13 @@ func (dc *DirectConnection) readResult(binary bool, maxRows int) (*mysql.Result,
 	if err != nil {
 		return nil, err
 	}
-	if data[0] == mysql.OKHeader {
+
+	switch data[0] {
+	case mysql.OKHeader:
 		return dc.handleOKPacket(data)
-	} else if data[0] == mysql.ErrHeader {
+	case mysql.ErrHeader:
 		return nil, dc.handleErrorPacket(data)
-	} else if data[0] == mysql.LocalInFileHeader {
+	case mysql.LocalInFileHeader:
 		return nil, mysql.ErrMalformPacket
 	}
 
@@ -1083,10 +1083,10 @@ func appendSetVariable(buf *bytes.Buffer, key string, value any) {
 			buf.WriteString("'")
 		}
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-		buf.WriteString(fmt.Sprintf("%d", v))
+		fmt.Fprintf(buf, "%d", v)
 	default:
 		buf.WriteString("'")
-		buf.WriteString(fmt.Sprintf("%v", v))
+		fmt.Fprintf(buf, "%v", v)
 		buf.WriteString("'")
 	}
 }

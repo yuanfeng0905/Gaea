@@ -44,7 +44,7 @@ func NewRouter(namespace *models.Namespace) (*Router, error) {
 	rt.rules = make(map[string]map[string]Rule)
 	rt.defaultRule = NewDefaultRule(namespace.DefaultSlice)
 
-	linkedRuleIndexes := make([]int, 0)
+	linkedRuleIndexes := make([]int, 0, len(namespace.ShardRules))
 
 	for i, shard := range namespace.ShardRules {
 		for _, slice := range shard.Slices {

@@ -311,15 +311,15 @@ func (ctx *RestoreCtx) WriteKeyWord(keyWord string) {
 // `str` may be wrapped in quotes and escaped according to RestoreFlags.
 func (ctx *RestoreCtx) WriteString(str string) {
 	if ctx.Flags.HasStringEscapeBackslashFlag() {
-		str = strings.Replace(str, `\`, `\\`, -1)
+		str = strings.ReplaceAll(str, `\`, `\\`)
 	}
 	quotes := ""
 	switch {
 	case ctx.Flags.HasStringSingleQuotesFlag():
-		str = strings.Replace(str, `'`, `''`, -1)
+		str = strings.ReplaceAll(str, `'`, `''`)
 		quotes = `'`
 	case ctx.Flags.HasStringDoubleQuotesFlag():
-		str = strings.Replace(str, `"`, `""`, -1)
+		str = strings.ReplaceAll(str, `"`, `""`)
 		quotes = `"`
 	}
 	fmt.Fprint(ctx.In, quotes, str, quotes)
@@ -337,10 +337,10 @@ func (ctx *RestoreCtx) WriteName(name string) {
 	quotes := ""
 	switch {
 	case ctx.Flags.HasNameDoubleQuotesFlag():
-		name = strings.Replace(name, `"`, `""`, -1)
+		name = strings.ReplaceAll(name, `"`, `""`)
 		quotes = `"`
 	case ctx.Flags.HasNameBackQuotesFlag():
-		name = strings.Replace(name, "`", "``", -1)
+		name = strings.ReplaceAll(name, "`", "``")
 		quotes = "`"
 	}
 	fmt.Fprint(ctx.In, quotes, name, quotes)

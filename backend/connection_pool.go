@@ -146,7 +146,6 @@ func (cp *connectionPoolImpl) Close() {
 	}
 	cp.connections = nil
 	cp.mu.Unlock()
-	return
 }
 
 // tryReuse reset params of connection before reuse

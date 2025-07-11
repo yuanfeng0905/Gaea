@@ -66,7 +66,7 @@ func (s *StatusCode) String() string {
 		r = "StatusDown"
 	}
 
-	return fmt.Sprintf(r)
+	return r
 }
 
 type DBInfo struct {
@@ -572,51 +572,51 @@ func GetSlaveStatus(conn PooledConnect) (bool, SlaveStatus, error) {
 
 		switch strings.ToLower(fieldName) {
 		case "seconds_behind_master":
-			switch col.(type) {
+			switch typ := col.(type) {
 			case uint64:
-				slaveStatus.SecondsBehindMaster = col.(uint64)
+				slaveStatus.SecondsBehindMaster = typ
 			default:
 				slaveStatus.SecondsBehindMaster = 0
 			}
 		case "slave_io_running":
-			switch col.(type) {
+			switch typ := col.(type) {
 			case string:
-				slaveStatus.SlaveIORunning = col.(string)
+				slaveStatus.SlaveIORunning = typ
 			default:
 				slaveStatus.SlaveIORunning = "No"
 			}
 		case "slave_sql_running":
-			switch col.(type) {
+			switch typ := col.(type) {
 			case string:
-				slaveStatus.SlaveSQLRunning = col.(string)
+				slaveStatus.SlaveSQLRunning = typ
 			default:
 				slaveStatus.SlaveSQLRunning = "No"
 			}
 		case "master_log_file":
-			switch col.(type) {
+			switch typ := col.(type) {
 			case string:
-				slaveStatus.MasterLogFile = col.(string)
+				slaveStatus.MasterLogFile = typ
 			default:
 				slaveStatus.MasterLogFile = ""
 			}
 		case "read_master_log_pos":
-			switch col.(type) {
+			switch typ := col.(type) {
 			case uint64:
-				slaveStatus.ReadMasterLogPos = col.(uint64)
+				slaveStatus.ReadMasterLogPos = typ
 			default:
 				slaveStatus.ReadMasterLogPos = 0
 			}
 		case "relay_master_log_file":
-			switch col.(type) {
+			switch typ := col.(type) {
 			case string:
-				slaveStatus.RelayMasterLogFile = col.(string)
+				slaveStatus.RelayMasterLogFile = typ
 			default:
 				slaveStatus.RelayMasterLogFile = ""
 			}
 		case "exec_master_log_pos":
-			switch col.(type) {
+			switch typ := col.(type) {
 			case uint64:
-				slaveStatus.ExecMasterLogPos = col.(uint64)
+				slaveStatus.ExecMasterLogPos = typ
 			default:
 				slaveStatus.ExecMasterLogPos = 0
 			}
