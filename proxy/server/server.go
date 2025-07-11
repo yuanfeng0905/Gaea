@@ -120,7 +120,6 @@ func (s *Server) onConn(c net.Conn) {
 	defer func() {
 		err := recover()
 		if err != nil {
-			const size = 4096
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)] //获得当前goroutine的stacktrace
 			log.Warn("[server] onConn panic error, remoteAddr: %s, stack: %s", c.RemoteAddr().String(), string(buf))

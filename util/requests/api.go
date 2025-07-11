@@ -199,7 +199,7 @@ func SendGet(url, user, password string) (*Response, error) {
 }
 
 // EncodeURL encode url
-func EncodeURL(host string, format string, args ...interface{}) string {
+func EncodeURL(host string, format string, args ...any) string {
 	var u url.URL
 	u.Scheme = "http"
 	u.Host = host

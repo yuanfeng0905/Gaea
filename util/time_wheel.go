@@ -22,13 +22,13 @@ import (
 // Task means handle unit in time wheel
 type Task struct {
 	delay    time.Duration
-	key      interface{}
+	key      any
 	round    int // optimize time wheel to handle delay  bigger than bucketsNum * tick
 	callback func()
 }
 
 type PipeLineItem struct {
-	value interface{}
+	value any
 	key   string
 }
 
@@ -38,8 +38,8 @@ type TimeWheel struct {
 	ticker *time.Ticker
 
 	bucketsNum    int
-	buckets       []map[interface{}]*Task // key: added item, value: *Task
-	bucketIndexes map[interface{}]int     // key: added item, value: bucket position
+	buckets       []map[any]*Task // key: added item, value: *Task
+	bucketIndexes map[any]int     // key: added item, value: bucket position
 
 	currentIndex int
 	pipelineC    chan PipeLineItem
@@ -57,14 +57,14 @@ func NewTimeWheel(tick time.Duration, bucketsNum int) (*TimeWheel, error) {
 	tw := &TimeWheel{
 		tick:          tick,
 		bucketsNum:    bucketsNum,
-		bucketIndexes: make(map[interface{}]int, 1024),
-		buckets:       make([]map[interface{}]*Task, bucketsNum),
+		bucketIndexes: make(map[any]int, 1024),
+		buckets:       make([]map[any]*Task, bucketsNum),
 		currentIndex:  0,
 		pipelineC:     make(chan PipeLineItem, 4096),
 	}
 
 	for i := 0; i < bucketsNum; i++ {
-		tw.buckets[i] = make(map[interface{}]*Task, 16)
+		tw.buckets[i] = make(map[any]*Task, 16)
 	}
 
 	return tw, nil
@@ -131,7 +131,7 @@ func (tw *TimeWheel) handleTick() {
 // Add add an item into time wheel
 // 每执行一个 sql 就需要执行一次这个方法，旧版本管道只有 1024，高并发情况下会存在资源抢占和阻塞
 // 为了提高性能，降低 session timeout 的精确度
-func (tw *TimeWheel) Add(delay time.Duration, key interface{}, callback func()) error {
+func (tw *TimeWheel) Add(delay time.Duration, key any, callback func()) error {
 	if delay <= 0 || key == nil {
 		return errors.New("invalid params")
 	}
@@ -172,7 +172,7 @@ func (tw *TimeWheel) calculateIndex(delay time.Duration) (index int) {
 }
 
 // Remove remove an item from time wheel
-func (tw *TimeWheel) Remove(key interface{}) error {
+func (tw *TimeWheel) Remove(key any) error {
 	if key == nil {
 		return errors.New("invalid params")
 	}
@@ -185,7 +185,7 @@ func (tw *TimeWheel) Remove(key interface{}) error {
 }
 
 // don't need to call callback
-func (tw *TimeWheel) remove(key interface{}) {
+func (tw *TimeWheel) remove(key any) {
 	if index, ok := tw.bucketIndexes[key]; ok {
 		delete(tw.bucketIndexes, key)
 		delete(tw.buckets[index], key)

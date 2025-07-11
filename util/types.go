@@ -24,7 +24,7 @@ import (
 
 // GetValueExprResult copy from ValueExpr.Restore()
 // TODO: 分表列是否需要支持等值比较NULL
-func GetValueExprResult(n *driver.ValueExpr) (interface{}, error) {
+func GetValueExprResult(n *driver.ValueExpr) (any, error) {
 	switch n.Kind() {
 	case types.KindNull:
 		return nil, nil // TODO: null str or nil?
