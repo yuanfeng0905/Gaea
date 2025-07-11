@@ -127,7 +127,7 @@ func (m *MycatPartitionLongShard) Init() error {
 }
 
 func toIntArray(str string) ([]int, error) {
-	str = strings.Replace(str, " ", "", -1)
+	str = strings.ReplaceAll(str, " ", "")
 	strList := strings.Split(str, ",")
 	ret := make([]int, 0, len(strList))
 	for _, s := range strList {

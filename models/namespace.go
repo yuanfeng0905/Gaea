@@ -42,8 +42,9 @@ type Namespace struct {
 	BlackSQL                []string          `json:"black_sql"`
 	AllowedIP               []string          `json:"allowed_ip"`
 	Slices                  []*Slice          `json:"slices"`
-	ShardRules              []*Shard          `json:"shard_rules"`
-	Users                   []*User           `json:"users"` // 客户端接入proxy用户，每个用户可以设置读写分离、读写权限等
+	ShardRules              []*Shard          `json:"shard_rules"` // 分片规则
+	GrayRules               []*GrayRule       `json:"gray_rules"`  // 灰度规则
+	Users                   []*User           `json:"users"`       // 客户端接入proxy用户，每个用户可以设置读写分离、读写权限等
 	DefaultSlice            string            `json:"default_slice"`
 	GlobalSequences         []*GlobalSequence `json:"global_sequences"`
 	DefaultCharset          string            `json:"default_charset"`

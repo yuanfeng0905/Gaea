@@ -59,12 +59,6 @@ func (ke KeyError) Error() string {
 	return string(ke)
 }
 
-func handleError(err *error) {
-	if x := recover(); x != nil {
-		*err = x.(KeyError)
-	}
-}
-
 // Uint64Key is a uint64 that can be converted into a KeyspaceId.
 type Uint64Key uint64
 

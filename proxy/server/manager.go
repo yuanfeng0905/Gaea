@@ -19,6 +19,7 @@ import (
 	"crypto/md5"
 	errs "errors"
 	"fmt"
+	"maps"
 	"math"
 	"net/http"
 	"os"
@@ -459,7 +460,7 @@ func (m *Manager) startConnectPoolMetricsTask(interval int) {
 				m.statistics.CalcCPUBusy(interval - 5)
 
 				current, _, _ := m.switchIndex.Get()
-				for nameSpaceName, _ := range m.namespaces[current].namespaces {
+				for nameSpaceName := range m.namespaces[current].namespaces {
 					m.recordBackendConnectPoolMetrics(nameSpaceName)
 				}
 			case <-tSQLRecordTime.C:
@@ -552,9 +553,7 @@ func CreateNamespaceManager(namespaceConfigs map[string]*models.Namespace) *Name
 // ShallowCopyNamespaceManager copy NamespaceManager
 func ShallowCopyNamespaceManager(nsMgr *NamespaceManager) *NamespaceManager {
 	newNsMgr := NewNamespaceManager()
-	for k, v := range nsMgr.namespaces {
-		newNsMgr.namespaces[k] = v
-	}
+	maps.Copy(newNsMgr.namespaces, nsMgr.namespaces)
 	return newNsMgr
 }
 
@@ -632,9 +631,7 @@ func CreateUserManager(namespaceConfigs map[string]*models.Namespace) (*UserMana
 func CloneUserManager(user *UserManager) *UserManager {
 	ret := NewUserManager()
 	// copy
-	for k, v := range user.userNamespaces {
-		ret.userNamespaces[k] = v
-	}
+	maps.Copy(ret.userNamespaces, user.userNamespaces)
 	for k, v := range user.users {
 		users := make([]string, len(v))
 		copy(users, v)
