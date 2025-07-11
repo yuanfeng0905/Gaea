@@ -40,7 +40,7 @@ func NewMycatPartitionModShard(shardNum int) *MycatPartitionModShard {
 }
 
 // FindForKey return result of calculated key
-func (m *MycatPartitionModShard) FindForKey(key interface{}) (int, error) {
+func (m *MycatPartitionModShard) FindForKey(key any) (int, error) {
 	h := hack.Abs(NumValue(key))
 	return int(h % int64(m.ShardNum)), nil
 }
@@ -141,7 +141,7 @@ func toIntArray(str string) ([]int, error) {
 }
 
 // FindForKey return MycatPartitionLongShard calculated result
-func (m *MycatPartitionLongShard) FindForKey(key interface{}) (int, error) {
+func (m *MycatPartitionLongShard) FindForKey(key any) (int, error) {
 	h := NumValue(key)
 	return m.segment[int(h)&andValue], nil
 }
@@ -230,7 +230,7 @@ func parseHashSliceValue(str string) (int, error) {
 }
 
 // FindForKey return MycatPartitionStringShard calculated result
-func (m *MycatPartitionStringShard) FindForKey(key interface{}) (int, error) {
+func (m *MycatPartitionStringShard) FindForKey(key any) (int, error) {
 	keyStr := GetString(key)
 	var start int
 	if m.hashSliceStart >= 0 {
@@ -317,7 +317,7 @@ func (m *MycatPartitionMurmurHashShard) Init() error {
 }
 
 // FindForKey return MycatPartitionMurmurHashShard calculated result
-func (m *MycatPartitionMurmurHashShard) FindForKey(key interface{}) (int, error) {
+func (m *MycatPartitionMurmurHashShard) FindForKey(key any) (int, error) {
 	keyStr := GetString(key)
 	hashKey := m.hashFunction.HashUnencodedChars(keyStr)
 	_, ret := m.bucketMap.Ceiling(int(hashKey))
@@ -480,7 +480,7 @@ func (m *MycatPartitionPaddingModShard) checkParam() error {
 }
 
 // FindForKey return MycatPartitionPaddingModShard calculated result
-func (m *MycatPartitionPaddingModShard) FindForKey(key interface{}) (int, error) {
+func (m *MycatPartitionPaddingModShard) FindForKey(key any) (int, error) {
 	h := NumValue(key) // assert the key is number
 	keyStr := strconv.FormatInt(h, 10)
 

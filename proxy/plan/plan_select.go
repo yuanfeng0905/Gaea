@@ -16,6 +16,7 @@ package plan
 
 import (
 	"fmt"
+
 	"github.com/XiaoMi/Gaea/mysql"
 	"github.com/XiaoMi/Gaea/parser/ast"
 	"github.com/XiaoMi/Gaea/parser/opcode"
@@ -859,8 +860,8 @@ func getDatabaseFuncHint(f *ast.FuncCallExpr, v ast.ExprNode) (string, error) {
 
 // 返回一个根据路由信息和路由值获取路由结果的函数
 // 左边为列名, 右边为参数
-func getFindTableIndexesFunc(op opcode.Op) func(rule router.Rule, columnName string, v interface{}) ([]int, error) {
-	findTableIndexesFunc := func(rule router.Rule, columnName string, v interface{}) ([]int, error) {
+func getFindTableIndexesFunc(op opcode.Op) func(rule router.Rule, columnName string, v any) ([]int, error) {
+	findTableIndexesFunc := func(rule router.Rule, columnName string, v any) ([]int, error) {
 		// 如果不是分表列, 则需要返回所有分片
 		if rule.GetShardingColumn() != columnName {
 			return rule.GetSubTableIndexes(), nil
@@ -904,7 +905,7 @@ func getFindTableIndexesFunc(op opcode.Op) func(rule router.Rule, columnName str
 }
 
 // copy from PlanBuilder.adjustShardIndex()
-func adjustShardIndex(s router.RangeShard, value interface{}, index int) int {
+func adjustShardIndex(s router.RangeShard, value any, index int) int {
 	if s.EqualStart(value, index) {
 		return index - 1
 	}
@@ -949,7 +950,7 @@ func handleBinaryOperationExprCompareLeftColumnRightColumn(p *TableAliasStmtInfo
 	return false, nil, expr, nil
 }
 
-func handleBinaryOperationExprCompareLeftColumnRightValue(p *TableAliasStmtInfo, expr *ast.BinaryOperationExpr, findTableIndexes func(router.Rule, string, interface{}) ([]int, error)) (bool, []int, ast.ExprNode, error) {
+func handleBinaryOperationExprCompareLeftColumnRightValue(p *TableAliasStmtInfo, expr *ast.BinaryOperationExpr, findTableIndexes func(router.Rule, string, any) ([]int, error)) (bool, []int, ast.ExprNode, error) {
 	column := expr.L.(*ast.ColumnNameExpr)
 	rule, need, isAlias, err := NeedCreateColumnNameExprDecoratorInCondition(p, column)
 	if err != nil {
@@ -980,7 +981,7 @@ func handleBinaryOperationExprCompareLeftColumnRightValue(p *TableAliasStmtInfo,
 	return true, tableIndexes, expr, nil
 }
 
-func handleBinaryOperationExprCompareLeftValueRightColumn(p *TableAliasStmtInfo, expr *ast.BinaryOperationExpr, findTableIndexes func(router.Rule, string, interface{}) ([]int, error)) (bool, []int, ast.ExprNode, error) {
+func handleBinaryOperationExprCompareLeftValueRightColumn(p *TableAliasStmtInfo, expr *ast.BinaryOperationExpr, findTableIndexes func(router.Rule, string, any) ([]int, error)) (bool, []int, ast.ExprNode, error) {
 	column := expr.R.(*ast.ColumnNameExpr)
 	rule, need, isAlias, err := NeedCreateColumnNameExprDecoratorInCondition(p, column)
 	if err != nil {

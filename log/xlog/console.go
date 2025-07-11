@@ -110,16 +110,16 @@ func (p *XConsoleLog) ReOpen() error {
 }
 
 // Warn implements XLogger
-func (p *XConsoleLog) Warn(format string, a ...interface{}) error {
+func (p *XConsoleLog) Warn(format string, a ...any) error {
 	return p.warnx(XConsoleLogDefaultlogID, format, a...)
 }
 
 // Warnx implements XLogger
-func (p *XConsoleLog) Warnx(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) Warnx(logID, format string, a ...any) error {
 	return p.warnx(logID, format, a...)
 }
 
-func (p *XConsoleLog) warnx(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) warnx(logID, format string, a ...any) error {
 	if p.level > WarnLevel {
 		return nil
 	}
@@ -134,16 +134,16 @@ func (p *XConsoleLog) warnx(logID, format string, a ...interface{}) error {
 }
 
 // Fatal implements XLogger
-func (p *XConsoleLog) Fatal(format string, a ...interface{}) error {
+func (p *XConsoleLog) Fatal(format string, a ...any) error {
 	return p.fatalx(XConsoleLogDefaultlogID, format, a...)
 }
 
 // Fatalx implements XLogger
-func (p *XConsoleLog) Fatalx(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) Fatalx(logID, format string, a ...any) error {
 	return p.fatalx(logID, format, a...)
 }
 
-func (p *XConsoleLog) fatalx(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) fatalx(logID, format string, a ...any) error {
 	if p.level > FatalLevel {
 		return nil
 	}
@@ -158,12 +158,12 @@ func (p *XConsoleLog) fatalx(logID, format string, a ...interface{}) error {
 }
 
 // Notice implements XLogger
-func (p *XConsoleLog) Notice(format string, a ...interface{}) error {
+func (p *XConsoleLog) Notice(format string, a ...any) error {
 	return p.Noticex(XConsoleLogDefaultlogID, format, a...)
 }
 
 // Noticex implements XLogger
-func (p *XConsoleLog) Noticex(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) Noticex(logID, format string, a ...any) error {
 	if p.level > NoticeLevel {
 		return nil
 	}
@@ -173,16 +173,16 @@ func (p *XConsoleLog) Noticex(logID, format string, a ...interface{}) error {
 }
 
 // Trace implements XLogger
-func (p *XConsoleLog) Trace(format string, a ...interface{}) error {
+func (p *XConsoleLog) Trace(format string, a ...any) error {
 	return p.tracex(XConsoleLogDefaultlogID, format, a...)
 }
 
 // Tracex implements XLogger
-func (p *XConsoleLog) Tracex(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) Tracex(logID, format string, a ...any) error {
 	return p.tracex(logID, format, a...)
 }
 
-func (p *XConsoleLog) tracex(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) tracex(logID, format string, a ...any) error {
 	if p.level > TraceLevel {
 		return nil
 	}
@@ -197,16 +197,16 @@ func (p *XConsoleLog) tracex(logID, format string, a ...interface{}) error {
 }
 
 // Debug implements XLogger
-func (p *XConsoleLog) Debug(format string, a ...interface{}) error {
+func (p *XConsoleLog) Debug(format string, a ...any) error {
 	return p.debugx(XConsoleLogDefaultlogID, format, a...)
 }
 
 // Debugx implements XLogger
-func (p *XConsoleLog) Debugx(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) Debugx(logID, format string, a ...any) error {
 	return p.debugx(logID, format, a...)
 }
 
-func (p *XConsoleLog) debugx(logID, format string, a ...interface{}) error {
+func (p *XConsoleLog) debugx(logID, format string, a ...any) error {
 	if p.level > DebugLevel {
 		return nil
 	}

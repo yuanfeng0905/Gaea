@@ -18,7 +18,7 @@ import "testing"
 
 func TestGetString(t *testing.T) {
 	tests := []struct {
-		v  interface{}
+		v  any
 		vs string
 	}{
 		{int(-1), "-1"},

@@ -87,6 +87,6 @@ func (c *APIClient) Ping() error {
 	return nil
 }
 
-func (c *APIClient) encodeURL(format string, args ...interface{}) string {
+func (c *APIClient) encodeURL(format string, args ...any) string {
 	return requests.EncodeURL(c.addr, format, args...)
 }

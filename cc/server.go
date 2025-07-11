@@ -101,7 +101,6 @@ func (s *Server) listNamespace(c *gin.Context) {
 	r.RetHeader.RetCode = 0
 	r.RetHeader.RetMessage = "SUCC"
 	c.JSON(http.StatusOK, r)
-	return
 }
 
 // QueryReq query namespace request
@@ -148,7 +147,7 @@ func (s *Server) queryNamespace(c *gin.Context) {
 	h.RetCode = 0
 	h.RetMessage = "SUCC"
 	c.JSON(http.StatusOK, r)
-	return
+
 }
 
 // @Summary 返回namespace配置详情
@@ -184,7 +183,6 @@ func (s *Server) detailNamespace(c *gin.Context) {
 	h.RetCode = 0
 	h.RetMessage = "SUCC"
 	c.JSON(http.StatusOK, r)
-	return
 }
 
 // @Summary 创建修改namespace配置
@@ -220,7 +218,6 @@ func (s *Server) modifyNamespace(c *gin.Context) {
 	h.RetCode = 0
 	h.RetMessage = "SUCC"
 	c.JSON(http.StatusOK, h)
-	return
 }
 
 // @Summary 删除namespace配置
@@ -251,7 +248,6 @@ func (s *Server) delNamespace(c *gin.Context) {
 	h.RetCode = 0
 	h.RetMessage = "SUCC"
 	c.JSON(http.StatusOK, h)
-	return
 }
 
 type sqlFingerprintResp struct {
@@ -287,7 +283,6 @@ func (s *Server) sqlFingerprint(c *gin.Context) {
 	r.RetHeader.RetCode = 0
 	r.RetHeader.RetMessage = "SUCC"
 	c.JSON(http.StatusOK, r)
-	return
 }
 
 type proxyConfigFingerprintResp struct {
@@ -315,7 +310,6 @@ func (s *Server) proxyConfigFingerprint(c *gin.Context) {
 	r.RetHeader.RetCode = 0
 	r.RetHeader.RetMessage = "SUCC"
 	c.JSON(http.StatusOK, r)
-	return
 }
 
 func (s *Server) Run() {
@@ -343,5 +337,4 @@ func (s *Server) Run() {
 
 func (s *Server) Close() {
 	s.exitC <- struct{}{}
-	return
 }

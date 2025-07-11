@@ -21,7 +21,7 @@ import (
 )
 
 // JSONEncode return json encoding of v
-func JSONEncode(v interface{}) []byte {
+func JSONEncode(v any) []byte {
 	b, err := json.MarshalIndent(v, "", "    ")
 	if err != nil {
 		//TODO panic
@@ -32,6 +32,6 @@ func JSONEncode(v interface{}) []byte {
 }
 
 // JSONDecode parses the JSON-encoded data and stores the result in the value pointed to by v
-func JSONDecode(v interface{}, data []byte) error {
+func JSONDecode(v any, data []byte) error {
 	return json.Unmarshal(data, v)
 }

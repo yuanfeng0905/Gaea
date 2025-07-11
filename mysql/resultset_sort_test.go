@@ -25,7 +25,7 @@ func TestResultsetSort(t *testing.T) {
 	r1 := new(Resultset)
 	r2 := new(Resultset)
 
-	r1.Values = [][]interface{}{
+	r1.Values = [][]any{
 		{int64(1), "a", []byte("aa")},
 		{int64(2), "a", []byte("bb")},
 		{int64(3), "c", []byte("bb")},
@@ -47,7 +47,7 @@ func TestResultsetSort(t *testing.T) {
 
 	sort.Sort(s)
 
-	r2.Values = [][]interface{}{
+	r2.Values = [][]any{
 		{int64(3), "c", []byte("bb")},
 		{int64(2), "a", []byte("bb")},
 		{int64(1), "a", []byte("aa")},
@@ -70,7 +70,7 @@ func TestResultsetSort(t *testing.T) {
 
 	sort.Sort(s)
 
-	r2.Values = [][]interface{}{
+	r2.Values = [][]any{
 		{int64(2), "a", []byte("bb")},
 		{int64(1), "a", []byte("aa")},
 		{int64(3), "c", []byte("bb")},
@@ -93,7 +93,7 @@ func TestResultsetSort(t *testing.T) {
 
 	sort.Sort(s)
 
-	r2.Values = [][]interface{}{
+	r2.Values = [][]any{
 		{int64(1), "a", []byte("aa")},
 		{int64(2), "a", []byte("bb")},
 		{int64(3), "c", []byte("bb")},

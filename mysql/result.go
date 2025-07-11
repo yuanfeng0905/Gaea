@@ -32,16 +32,17 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"strconv"
+
 	"github.com/XiaoMi/Gaea/core/errors"
 	"github.com/XiaoMi/Gaea/util/hack"
-	"strconv"
 )
 
 // RowData row in []byte format
 type RowData []byte
 
 // Parse parse data to field
-func (p RowData) Parse(f []*Field, binary bool) ([]interface{}, error) {
+func (p RowData) Parse(f []*Field, binary bool) ([]any, error) {
 	if binary {
 		return p.ParseBinary(f)
 	}
@@ -49,8 +50,8 @@ func (p RowData) Parse(f []*Field, binary bool) ([]interface{}, error) {
 }
 
 // ParseText parse text format data
-func (p RowData) ParseText(f []*Field) ([]interface{}, error) {
-	data := make([]interface{}, len(f))
+func (p RowData) ParseText(f []*Field) ([]any, error) {
+	data := make([]any, len(f))
 
 	var err error
 	var v []byte
@@ -96,8 +97,8 @@ func (p RowData) ParseText(f []*Field) ([]interface{}, error) {
 }
 
 // ParseBinary parse binary format data
-func (p RowData) ParseBinary(f []*Field) ([]interface{}, error) {
-	data := make([]interface{}, len(f))
+func (p RowData) ParseBinary(f []*Field) ([]any, error) {
+	data := make([]any, len(f))
 
 	if p[0] != OKHeader {
 		return nil, ErrMalformPacket
@@ -295,10 +296,10 @@ func (r *Result) BuildBinaryResultSet() error {
 
 // Resultset means mysql results of sql execution, included split table sql
 type Resultset struct {
-	Fields     []*Field        // columns information
-	FieldNames map[string]int  // column information, key: column name value: index in Fields
-	Values     [][]interface{} // values after sql handled
-	RowDatas   []RowData       // data will returned
+	Fields     []*Field       // columns information
+	FieldNames map[string]int // column information, key: column name value: index in Fields
+	Values     [][]any        // values after sql handled
+	RowDatas   []RowData      // data will returned
 }
 
 // RowNumber return row number of results
@@ -312,7 +313,7 @@ func (r *Resultset) ColumnNumber() int {
 }
 
 // GetValue return value in special row and column
-func (r *Resultset) GetValue(row, column int) (interface{}, error) {
+func (r *Resultset) GetValue(row, column int) (any, error) {
 	if row >= len(r.Values) || row < 0 {
 		return nil, fmt.Errorf("invalid row index %d", row)
 	}
@@ -334,7 +335,7 @@ func (r *Resultset) NameIndex(name string) (int, error) {
 }
 
 // GetValueByName return value in special row and column
-func (r *Resultset) GetValueByName(row int, name string) (interface{}, error) {
+func (r *Resultset) GetValueByName(row int, name string) (any, error) {
 	column, err := r.NameIndex(name)
 	if err != nil {
 		return nil, err
@@ -498,7 +499,7 @@ func (r *Resultset) GetStringByName(row int, name string) (string, error) {
 }
 
 // BuildResultset build resultset
-func BuildResultset(fields []*Field, names []string, values [][]interface{}) (*Resultset, error) {
+func BuildResultset(fields []*Field, names []string, values [][]any) (*Resultset, error) {
 	var ExistFields bool
 	r := new(Resultset)
 
@@ -559,7 +560,7 @@ func BuildResultset(fields []*Field, names []string, values [][]interface{}) (*R
 
 // BuildBinaryResultset build binary resultset
 // https://dev.mysql.com/doc/internals/en/binary-protocol-resultset.html
-func BuildBinaryResultset(fields []*Field, values [][]interface{}) (*Resultset, error) {
+func BuildBinaryResultset(fields []*Field, values [][]any) (*Resultset, error) {
 	r := new(Resultset)
 	r.Fields = make([]*Field, len(fields))
 	for i := range fields {
@@ -598,7 +599,7 @@ func BuildBinaryResultset(fields []*Field, values [][]interface{}) (*Resultset, 
 }
 
 // formatField encode field according to type of value if necessary
-func formatField(field *Field, value interface{}) error {
+func formatField(field *Field, value any) error {
 	switch value.(type) {
 	case int8, int16, int32, int64, int:
 		field.Charset = 63
@@ -622,7 +623,7 @@ func formatField(field *Field, value interface{}) error {
 }
 
 // formatValue encode value into a string format
-func formatValue(value interface{}) ([]byte, error) {
+func formatValue(value any) ([]byte, error) {
 	if value == nil {
 		return hack.Slice("NULL"), nil
 	}

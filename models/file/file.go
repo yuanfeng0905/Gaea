@@ -16,7 +16,6 @@ package file
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -89,7 +88,7 @@ func (c *Client) Delete(path string) error {
 
 // Read read file data
 func (c *Client) Read(file string) ([]byte, error) {
-	value, err := ioutil.ReadFile(file)
+	value, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +98,7 @@ func (c *Client) Read(file string) ([]byte, error) {
 // List list path, return slice of all files
 func (c *Client) List(path string) ([]string, error) {
 	r := make([]string, 0)
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return r, err
 	}
@@ -112,14 +111,14 @@ func (c *Client) List(path string) ([]string, error) {
 }
 
 func (c *Client) ListWithValues(path string) (map[string]string, error) {
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	r := make(map[string]string, len(files))
 	if err != nil {
 		return r, err
 	}
 	for _, file := range files {
 		// concatenate the path and file name to ensure that the full path is used to read the file
-		data, err := ioutil.ReadFile(filepath.Join(path, file.Name()))
+		data, err := os.ReadFile(filepath.Join(path, file.Name()))
 		if err != nil {
 			return r, err
 		}

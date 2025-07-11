@@ -5,10 +5,11 @@
 package backend
 
 import (
-	mysql "github.com/XiaoMi/Gaea/mysql"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 	time "time"
+
+	mysql "github.com/XiaoMi/Gaea/mysql"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockPooledConnect is a mock of PooledConnect interface
@@ -84,7 +85,7 @@ func (m *MockPooledConnect) Execute(arg0 string, arg1 int) (*mysql.Result, error
 }
 
 // Execute indicates an expected call of Execute
-func (mr *MockPooledConnectMockRecorder) Execute(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) Execute(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Execute", reflect.TypeOf((*MockPooledConnect)(nil).Execute), arg0, arg1)
 }
@@ -99,7 +100,7 @@ func (m *MockPooledConnect) ExecuteWithTimeout(arg0 string, arg1 int, arg2 time.
 }
 
 // ExecuteWithTimeout indicates an expected call of ExecuteWithTimeout
-func (mr *MockPooledConnectMockRecorder) ExecuteWithTimeout(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) ExecuteWithTimeout(arg0, arg1, arg2 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteWithTimeout", reflect.TypeOf((*MockPooledConnect)(nil).ExecuteWithTimeout), arg0, arg1, arg2)
 }
@@ -113,7 +114,7 @@ func (m *MockPooledConnect) FetchMoreRows(arg0 *mysql.Result, arg1 int) error {
 }
 
 // FetchMoreRows indicates an expected call of FetchMoreRows
-func (mr *MockPooledConnectMockRecorder) FetchMoreRows(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) FetchMoreRows(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchMoreRows", reflect.TypeOf((*MockPooledConnect)(nil).FetchMoreRows), arg0, arg1)
 }
@@ -128,7 +129,7 @@ func (m *MockPooledConnect) FieldList(arg0, arg1 string) ([]*mysql.Field, error)
 }
 
 // FieldList indicates an expected call of FieldList
-func (mr *MockPooledConnectMockRecorder) FieldList(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) FieldList(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FieldList", reflect.TypeOf((*MockPooledConnect)(nil).FieldList), arg0, arg1)
 }
@@ -240,7 +241,7 @@ func (m *MockPooledConnect) PingWithTimeout(arg0 time.Duration) error {
 }
 
 // PingWithTimeout indicates an expected call of PingWithTimeout
-func (mr *MockPooledConnectMockRecorder) PingWithTimeout(arg0 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) PingWithTimeout(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingWithTimeout", reflect.TypeOf((*MockPooledConnect)(nil).PingWithTimeout), arg0)
 }
@@ -255,7 +256,7 @@ func (m *MockPooledConnect) ReadMoreResult(arg0 int) (*mysql.Result, error) {
 }
 
 // ReadMoreResult indicates an expected call of ReadMoreResult
-func (mr *MockPooledConnectMockRecorder) ReadMoreResult(arg0 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) ReadMoreResult(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadMoreResult", reflect.TypeOf((*MockPooledConnect)(nil).ReadMoreResult), arg0)
 }
@@ -309,7 +310,7 @@ func (m *MockPooledConnect) SetAutoCommit(arg0 byte) error {
 }
 
 // SetAutoCommit indicates an expected call of SetAutoCommit
-func (mr *MockPooledConnectMockRecorder) SetAutoCommit(arg0 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) SetAutoCommit(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetAutoCommit", reflect.TypeOf((*MockPooledConnect)(nil).SetAutoCommit), arg0)
 }
@@ -324,7 +325,7 @@ func (m *MockPooledConnect) SetCharset(arg0 string, arg1 mysql.CollationID) (boo
 }
 
 // SetCharset indicates an expected call of SetCharset
-func (mr *MockPooledConnectMockRecorder) SetCharset(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) SetCharset(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetCharset", reflect.TypeOf((*MockPooledConnect)(nil).SetCharset), arg0, arg1)
 }
@@ -347,7 +348,7 @@ func (m *MockPooledConnect) SyncSessionVariables(arg0 *mysql.SessionVariables) e
 }
 
 // SetSessionVariables indicates an expected call of SetSessionVariables
-func (mr *MockPooledConnectMockRecorder) SetSessionVariables(arg0 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) SetSessionVariables(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSessionVariables", reflect.TypeOf((*MockPooledConnect)(nil).SetSessionVariables), arg0)
 }
@@ -361,7 +362,7 @@ func (m *MockPooledConnect) UseDB(arg0 string) error {
 }
 
 // UseDB indicates an expected call of UseDB
-func (mr *MockPooledConnectMockRecorder) UseDB(arg0 interface{}) *gomock.Call {
+func (mr *MockPooledConnectMockRecorder) UseDB(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UseDB", reflect.TypeOf((*MockPooledConnect)(nil).UseDB), arg0)
 }

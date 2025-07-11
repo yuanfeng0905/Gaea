@@ -47,11 +47,11 @@ import (
 /*由分片ID找到分片，可用文件中的函数*/
 type KeyError string
 
-func NewKeyError(format string, args ...interface{}) KeyError {
+func NewKeyError(format string, args ...any) KeyError {
 	return KeyError(fmt.Sprintf(format, args...))
 }
 
-func NewInvalidDateFormatKeyError(key interface{}) KeyError {
+func NewInvalidDateFormatKeyError(key any) KeyError {
 	return KeyError(fmt.Sprintf("invalid date format %v", key))
 }
 
@@ -75,7 +75,7 @@ func (i Uint64Key) String() string {
 }
 
 // don't use this function like strconv.FormatInt()!!!
-func EncodeValue(value interface{}) string {
+func EncodeValue(value any) string {
 	switch val := value.(type) {
 	case int:
 		return Uint64Key(val).String()
@@ -91,7 +91,7 @@ func EncodeValue(value interface{}) string {
 	panic(NewKeyError("Unexpected key variable type %T", value))
 }
 
-func GetString(value interface{}) string {
+func GetString(value any) string {
 	switch val := value.(type) {
 	case int:
 		return strconv.FormatInt(int64(val), 10)
@@ -110,7 +110,7 @@ func GetString(value interface{}) string {
 	}
 }
 
-func HashValue(value interface{}) uint64 {
+func HashValue(value any) uint64 {
 	switch val := value.(type) {
 	case int:
 		return uint64(val)
@@ -130,7 +130,7 @@ func HashValue(value interface{}) uint64 {
 	panic(NewKeyError("Unexpected key variable type %T", value))
 }
 
-func NumValue(value interface{}) int64 {
+func NumValue(value any) int64 {
 	switch val := value.(type) {
 	case int:
 		return int64(val)
@@ -155,20 +155,20 @@ func NumValue(value interface{}) int64 {
 }
 
 type Shard interface {
-	FindForKey(key interface{}) (int, error)
+	FindForKey(key any) (int, error)
 }
 
 /*一个范围的分片,例如[start,end)*/
 type RangeShard interface {
 	Shard
-	EqualStart(key interface{}, index int) bool
+	EqualStart(key any, index int) bool
 }
 
 type HashShard struct {
 	ShardNum int
 }
 
-func (s *HashShard) FindForKey(key interface{}) (int, error) {
+func (s *HashShard) FindForKey(key any) (int, error) {
 	h := HashValue(key)
 
 	return int(h % uint64(s.ShardNum)), nil
@@ -178,7 +178,7 @@ type ModShard struct {
 	ShardNum int
 }
 
-func (m *ModShard) FindForKey(key interface{}) (int, error) {
+func (m *ModShard) FindForKey(key any) (int, error) {
 	h := hack.Abs(NumValue(key))
 	return int(h % int64(m.ShardNum)), nil
 }
@@ -187,7 +187,7 @@ type NumRangeShard struct {
 	Shards []NumKeyRange
 }
 
-func (s *NumRangeShard) FindForKey(key interface{}) (int, error) {
+func (s *NumRangeShard) FindForKey(key any) (int, error) {
 	v := NumValue(key)
 	for i, r := range s.Shards {
 		if r.Contains(v) {
@@ -197,7 +197,7 @@ func (s *NumRangeShard) FindForKey(key interface{}) (int, error) {
 	return -1, errors.ErrKeyOutOfRange
 }
 
-func (s *NumRangeShard) EqualStart(key interface{}, index int) bool {
+func (s *NumRangeShard) EqualStart(key any, index int) bool {
 	v := NumValue(key)
 	return s.Shards[index].Start == v
 }
@@ -205,7 +205,7 @@ func (s *NumRangeShard) EqualStart(key interface{}, index int) bool {
 type DateYearShard struct {
 }
 
-func (s *DateYearShard) getNumYear(key interface{}) (int, error) {
+func (s *DateYearShard) getNumYear(key any) (int, error) {
 	switch val := key.(type) {
 	case int:
 		tm := time.Unix(int64(val), 0)
@@ -227,11 +227,11 @@ func (s *DateYearShard) getNumYear(key interface{}) (int, error) {
 }
 
 // the format of date is: YYYY-MM-DD HH:MM:SS,YYYY-MM-DD or unix timestamp(int)
-func (s *DateYearShard) FindForKey(key interface{}) (int, error) {
+func (s *DateYearShard) FindForKey(key any) (int, error) {
 	return s.getNumYear(key)
 }
 
-func (s *DateYearShard) EqualStart(key interface{}, index int) bool {
+func (s *DateYearShard) EqualStart(key any, index int) bool {
 	numYear, err := s.getNumYear(key)
 	if err != nil {
 		return false
@@ -243,7 +243,7 @@ func (s *DateYearShard) EqualStart(key interface{}, index int) bool {
 type DateMonthShard struct {
 }
 
-func (s *DateMonthShard) getNumYearMonth(key interface{}) (int, error) {
+func (s *DateMonthShard) getNumYearMonth(key any) (int, error) {
 	timeFormat := "2006-01-02"
 	switch val := key.(type) {
 	case int:
@@ -288,11 +288,11 @@ func (s *DateMonthShard) getNumYearMonth(key interface{}) (int, error) {
 }
 
 // the format of date is: YYYY-MM-DD HH:MM:SS,YYYY-MM-DD or unix timestamp(int)
-func (s *DateMonthShard) FindForKey(key interface{}) (int, error) {
+func (s *DateMonthShard) FindForKey(key any) (int, error) {
 	return s.getNumYearMonth(key)
 }
 
-func (s *DateMonthShard) EqualStart(key interface{}, index int) bool {
+func (s *DateMonthShard) EqualStart(key any, index int) bool {
 	numYear, err := s.getNumYearMonth(key)
 	if err != nil {
 		return false
@@ -304,7 +304,7 @@ func (s *DateMonthShard) EqualStart(key interface{}, index int) bool {
 type DateDayShard struct {
 }
 
-func (s *DateDayShard) getNumYearMonthDay(key interface{}) (int, error) {
+func (s *DateDayShard) getNumYearMonthDay(key any) (int, error) {
 	timeFormat := "2006-01-02"
 	switch val := key.(type) {
 	case int:
@@ -349,11 +349,11 @@ func (s *DateDayShard) getNumYearMonthDay(key interface{}) (int, error) {
 }
 
 // the format of date is: YYYY-MM-DD HH:MM:SS,YYYY-MM-DD or unix timestamp(int)
-func (s *DateDayShard) FindForKey(key interface{}) (int, error) {
+func (s *DateDayShard) FindForKey(key any) (int, error) {
 	return s.getNumYearMonthDay(key)
 }
 
-func (s *DateDayShard) EqualStart(key interface{}, index int) bool {
+func (s *DateDayShard) EqualStart(key any, index int) bool {
 	numYear, err := s.getNumYearMonthDay(key)
 	if err != nil {
 		return false
@@ -365,14 +365,14 @@ func (s *DateDayShard) EqualStart(key interface{}, index int) bool {
 type DefaultShard struct {
 }
 
-func (s *DefaultShard) FindForKey(key interface{}) (int, error) {
+func (s *DefaultShard) FindForKey(key any) (int, error) {
 	return 0, nil
 }
 
 type GlobalTableShard struct {
 }
 
-func (s *GlobalTableShard) FindForKey(key interface{}) (int, error) {
+func (s *GlobalTableShard) FindForKey(key any) (int, error) {
 	panic("global table cannot find key")
 }
 

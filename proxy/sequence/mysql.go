@@ -15,7 +15,6 @@
 package sequence
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -99,7 +98,7 @@ func (s *MySQLSequence) getSeqFromDB() error {
 
 	ns := strings.Split(ret, ",")
 	if len(ns) != 2 {
-		return errors.New(fmt.Sprintf("invalid mycat sequence value %s %s", s.seqName, ret))
+		return fmt.Errorf("invalid mycat sequence value %s %s", s.seqName, ret)
 	}
 
 	curr, _ := strconv.ParseInt(ns[0], 10, 64)

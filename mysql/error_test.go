@@ -14,10 +14,11 @@
 package mysql
 
 import (
+	"testing"
+
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var _ = check.Suite(&testSQLErrorSuite{})
@@ -41,11 +42,11 @@ func (s *testSQLErrorSuite) TestSQLError(c *check.C) {
 
 func TestRespError(t *testing.T) {
 	v := 0
-	var writeResp = func(interface{}) error {
+	var writeResp = func(any) error {
 		v += 1
 		return nil
 	}
-	var writeRespErr = func(interface{}) error {
+	var writeRespErr = func(any) error {
 		v += 1
 		return errors.New("write resp error")
 	}
@@ -74,7 +75,7 @@ func TestRespError(t *testing.T) {
 	assert.Equal(t, v, 4)
 }
 
-func genRespErr(err interface{}, writeResp func(interface{}) error) error {
+func genRespErr(err any, writeResp func(any) error) error {
 	switch err.(type) {
 	case *SessionCloseRespError:
 		writeResp(err)

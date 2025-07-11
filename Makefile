@@ -12,6 +12,9 @@ all: build test
 
 build: parser gaea gaea-cc
 
+gaea-local:
+	CGO_ENABLED=0 go build -o $(GAEA_OUT) $(shell bash gen_ldflags.sh $(GAEA_OUT) $(PKG)/core $(PKG)/cmd/gaea)
+
 gaea:
 	$(GO) build -o $(GAEA_OUT) $(shell bash gen_ldflags.sh $(GAEA_OUT) $(PKG)/core $(PKG)/cmd/gaea)
 

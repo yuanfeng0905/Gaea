@@ -16,8 +16,9 @@ package router
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/XiaoMi/Gaea/models"
 )
@@ -461,10 +462,10 @@ func TestParseRule(t *testing.T) {
 }
 
 type MockShard struct {
-	FindForKeyFunc func(key interface{}) (int, error)
+	FindForKeyFunc func(key any) (int, error)
 }
 
-func (m *MockShard) FindForKey(key interface{}) (int, error) {
+func (m *MockShard) FindForKey(key any) (int, error) {
 	return m.FindForKeyFunc(key)
 }
 
@@ -474,7 +475,7 @@ type MockRule struct {
 	GetShardingColumnFunc           func() string
 	IsLinkedRuleFunc                func() bool
 	GetShardFunc                    func() Shard
-	FindTableIndexFunc              func(key interface{}) (int, error)
+	FindTableIndexFunc              func(key any) (int, error)
 	GetSliceFunc                    func(i int) string
 	GetSliceIndexFromTableIndexFunc func(i int) int
 	GetSlicesFunc                   func() []string
@@ -507,7 +508,7 @@ func (m *MockRule) GetShard() Shard {
 	return m.GetShardFunc()
 }
 
-func (m *MockRule) FindTableIndex(key interface{}) (int, error) {
+func (m *MockRule) FindTableIndex(key any) (int, error) {
 	return m.FindTableIndexFunc(key)
 }
 
@@ -661,7 +662,7 @@ func TestBaseRuleMethods(t *testing.T) {
 
 	t.Run("FindTableIndex", func(t *testing.T) {
 		mockShard := &MockShard{
-			FindForKeyFunc: func(key interface{}) (int, error) {
+			FindForKeyFunc: func(key any) (int, error) {
 				return 0, nil
 			},
 		}
@@ -769,7 +770,7 @@ func TestLinkedRuleMethods(t *testing.T) {
 
 	t.Run("FindTableIndex", func(t *testing.T) {
 		mockShard := &MockShard{
-			FindForKeyFunc: func(key interface{}) (int, error) {
+			FindForKeyFunc: func(key any) (int, error) {
 				return 0, nil
 			},
 		}

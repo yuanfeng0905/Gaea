@@ -106,7 +106,7 @@ type SessionExecutor struct {
 type Response struct {
 	RespType int
 	Status   uint16
-	Data     interface{}
+	Data     any
 	IsBinary bool
 }
 
@@ -629,8 +629,8 @@ func (se *SessionExecutor) executeInMultiSlices(reqCtx *util.RequestContext, pcs
 			resultCount += len(sqlDB)
 		}
 	}
-	rs := make([]interface{}, resultCount)
-	f := func(reqCtx *util.RequestContext, rs []interface{}, i int, sliceName string, execSqls map[string][]string, pc backend.PooledConnect) {
+	rs := make([]any, resultCount)
+	f := func(reqCtx *util.RequestContext, rs []any, i int, sliceName string, execSqls map[string][]string, pc backend.PooledConnect) {
 		// 对 execSqls 排序后处理
 		dbs := make([]string, 0, len(execSqls))
 		for k := range execSqls {
@@ -931,7 +931,7 @@ func createShowDatabaseResult(dbs []string) *mysql.Result {
 	r.Fields = append(r.Fields, field)
 
 	for _, db := range dbs {
-		r.Values = append(r.Values, []interface{}{db})
+		r.Values = append(r.Values, []any{db})
 	}
 
 	result := mysql.ResultPool.Get()
@@ -955,7 +955,7 @@ func createShowGeneralLogResult() *mysql.Result {
 	} else {
 		value = "OFF"
 	}
-	r.Values = append(r.Values, []interface{}{value})
+	r.Values = append(r.Values, []any{value})
 	result := mysql.ResultPool.Get()
 	result.AffectedRows = 1
 	result.Resultset = r

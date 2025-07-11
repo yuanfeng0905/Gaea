@@ -22,53 +22,53 @@ func (ml *MockLogger) SetLevel(name, level string) error {
 	return nil
 }
 
-func (ml *MockLogger) Debug(format string, a ...interface{}) (err error) {
+func (ml *MockLogger) Debug(format string, a ...any) (err error) {
 	_, err = fmt.Fprintf(ml.output, format+"\n", a...)
 	return
 }
 
-func (ml *MockLogger) Trace(format string, a ...interface{}) (err error) {
+func (ml *MockLogger) Trace(format string, a ...any) (err error) {
 	_, err = fmt.Fprintf(ml.output, format+"\n", a...)
 	return
 }
 
-func (ml *MockLogger) Notice(format string, a ...interface{}) (err error) {
+func (ml *MockLogger) Notice(format string, a ...any) (err error) {
 	_, err = fmt.Fprintf(ml.output, format+"\n", a...)
 	return
 }
 
-func (ml *MockLogger) Warn(format string, a ...interface{}) (err error) {
+func (ml *MockLogger) Warn(format string, a ...any) (err error) {
 	_, err = fmt.Fprintf(ml.output, format+"\n", a...)
 	return
 }
 
-func (ml *MockLogger) Fatal(format string, a ...interface{}) (err error) {
+func (ml *MockLogger) Fatal(format string, a ...any) (err error) {
 	_, err = fmt.Fprintf(ml.output, format+"\n", a...)
 	return
 }
 
-func (ml *MockLogger) Debugx(logID, format string, a ...interface{}) (err error) {
-	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]interface{}{logID}, a...)...)
+func (ml *MockLogger) Debugx(logID, format string, a ...any) (err error) {
+	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]any{logID}, a...)...)
 	return
 }
 
-func (ml *MockLogger) Tracex(logID, format string, a ...interface{}) (err error) {
-	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]interface{}{logID}, a...)...)
+func (ml *MockLogger) Tracex(logID, format string, a ...any) (err error) {
+	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]any{logID}, a...)...)
 	return
 }
 
-func (ml *MockLogger) Noticex(logID, format string, a ...interface{}) (err error) {
-	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]interface{}{logID}, a...)...)
+func (ml *MockLogger) Noticex(logID, format string, a ...any) (err error) {
+	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]any{logID}, a...)...)
 	return
 }
 
-func (ml *MockLogger) Warnx(logID, format string, a ...interface{}) (err error) {
-	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]interface{}{logID}, a...)...)
+func (ml *MockLogger) Warnx(logID, format string, a ...any) (err error) {
+	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]any{logID}, a...)...)
 	return
 }
 
-func (ml *MockLogger) Fatalx(logID, format string, a ...interface{}) (err error) {
-	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]interface{}{logID}, a...)...)
+func (ml *MockLogger) Fatalx(logID, format string, a ...any) (err error) {
+	_, err = fmt.Fprintf(ml.output, "[%s] "+format+"\n", append([]any{logID}, a...)...)
 	return
 }
 
@@ -105,7 +105,7 @@ func TestLoggingFunctions(t *testing.T) {
 	// Define test cases for each logging function
 	testCases := []struct {
 		name        string
-		logFunc     func(string, ...interface{}) error
+		logFunc     func(string, ...any) error
 		expectedOut string
 	}{
 		{
@@ -156,38 +156,38 @@ func TestLoggingWithFormat(t *testing.T) {
 	// Define test cases for each logging function with format
 	testCases := []struct {
 		name        string
-		logFunc     func(string, ...interface{}) error
-		args        []interface{}
+		logFunc     func(string, ...any) error
+		args        []any
 		expectedOut string
 	}{
 		{
 			name:        "Debug with format",
-			logFunc:     func(f string, a ...interface{}) error { return Debug(f, a...) },
-			args:        []interface{}{"formatted %s", "arg"},
+			logFunc:     func(f string, a ...any) error { return Debug(f, a...) },
+			args:        []any{"formatted %s", "arg"},
 			expectedOut: "formatted arg",
 		},
 		{
 			name:        "Trace with format",
-			logFunc:     func(f string, a ...interface{}) error { return Trace(f, a...) },
-			args:        []interface{}{"formatted %s", "arg"},
+			logFunc:     func(f string, a ...any) error { return Trace(f, a...) },
+			args:        []any{"formatted %s", "arg"},
 			expectedOut: "formatted arg",
 		},
 		{
 			name:        "Notice with format",
-			logFunc:     func(f string, a ...interface{}) error { return Notice(f, a...) },
-			args:        []interface{}{"formatted %s", "arg"},
+			logFunc:     func(f string, a ...any) error { return Notice(f, a...) },
+			args:        []any{"formatted %s", "arg"},
 			expectedOut: "formatted arg",
 		},
 		{
 			name:        "Warn with format",
-			logFunc:     func(f string, a ...interface{}) error { return Warn(f, a...) },
-			args:        []interface{}{"formatted %s", "arg"},
+			logFunc:     func(f string, a ...any) error { return Warn(f, a...) },
+			args:        []any{"formatted %s", "arg"},
 			expectedOut: "formatted arg",
 		},
 		{
 			name:        "Fatal with format",
-			logFunc:     func(f string, a ...interface{}) error { return Fatal(f, a...) },
-			args:        []interface{}{"formatted %s", "arg"},
+			logFunc:     func(f string, a ...any) error { return Fatal(f, a...) },
+			args:        []any{"formatted %s", "arg"},
 			expectedOut: "formatted arg",
 		},
 	}

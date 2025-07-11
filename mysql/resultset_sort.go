@@ -100,7 +100,7 @@ func (r *ResultsetSorter) Less(i, j int) bool {
 }
 
 // compare value using asc
-func cmpValue(v1 interface{}, v2 interface{}) int {
+func cmpValue(v1 any, v2 any) int {
 	if v1 == nil && v2 == nil {
 		return 0
 	} else if v1 == nil {

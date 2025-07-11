@@ -48,7 +48,7 @@ func TestLimitSelectResult(t *testing.T) {
 
 			ret := &mysql.Result{
 				Resultset: &mysql.Resultset{
-					Values:   make([][]interface{}, test.retLen),
+					Values:   make([][]any, test.retLen),
 					RowDatas: make([]mysql.RowData, test.retLen),
 				},
 			}

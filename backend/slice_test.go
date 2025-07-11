@@ -299,7 +299,7 @@ func TestCheckSlaveSyncStatus(t *testing.T) {
 						"Relay_Master_Log_File": 5,
 						"Exec_Master_Log_Pos":   6,
 					},
-					Values: [][]interface{}{
+					Values: [][]any{
 						{ca.c.SecondsBehindMaster, ca.c.SlaveIORunning, ca.c.SlaveSQLRunning, ca.c.MasterLogFile, ca.c.ReadMasterLogPos, ca.c.RelayMasterLogFile, ca.c.ExecMasterLogPos},
 					},
 				},

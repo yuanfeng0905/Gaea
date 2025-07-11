@@ -26,13 +26,13 @@ type resultPool struct {
 var ResultPool = &resultPool{
 	// 有 result 的对象池
 	p1: &sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return new(Result)
 		},
 	},
 	// 没有 result 的对象池
 	p2: &sync.Pool{
-		New: func() interface{} {
+		New: func() any {
 			return new(Result)
 		},
 	},

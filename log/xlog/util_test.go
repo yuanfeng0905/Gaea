@@ -47,11 +47,11 @@ func TestFormatLog(t *testing.T) {
 func TestFormatValue(t *testing.T) {
 	testCases := []struct {
 		format   string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
-		{"Hello, %s!", []interface{}{"World"}, "Hello, World!"},
-		{"Number: %d", []interface{}{42}, "Number: 42"},
+		{"Hello, %s!", []any{"World"}, "Hello, World!"},
+		{"Number: %d", []any{42}, "Number: 42"},
 		{"No args", nil, "No args"},
 	}
 

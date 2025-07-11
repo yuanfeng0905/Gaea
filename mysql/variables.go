@@ -20,7 +20,7 @@ import (
 	"strings"
 )
 
-type verifyFunc func(interface{}) error
+type verifyFunc func(any) error
 
 // allowed session variables
 const (
@@ -168,7 +168,7 @@ func (s *SessionVariables) Delete(key string) {
 }
 
 // Set store variable in session
-func (s *SessionVariables) Set(key string, value interface{}) error {
+func (s *SessionVariables) Set(key string, value any) error {
 	formatKey := formatVariableName(key)
 	verifyFunc, ok := variableVerifyFuncMap[formatKey]
 	if !ok {
@@ -190,7 +190,7 @@ func (s *SessionVariables) Set(key string, value interface{}) error {
 }
 
 // Get return variable with specific key
-func (s *SessionVariables) Get(key string) (interface{}, bool) {
+func (s *SessionVariables) Get(key string) (any, bool) {
 	v, ok := s.variables[key]
 	return v, ok
 }
@@ -247,12 +247,12 @@ func formatVariableName(name string) string {
 // Variable variable definition in session
 type Variable struct {
 	name   string
-	value  interface{}
+	value  any
 	verify verifyFunc
 }
 
 // NewVariable constructor of Variable
-func NewVariable(name string, value interface{}, verify verifyFunc) (*Variable, error) {
+func NewVariable(name string, value any, verify verifyFunc) (*Variable, error) {
 	v := &Variable{
 		name:   formatVariableName(name),
 		value:  value,
@@ -265,7 +265,7 @@ func NewVariable(name string, value interface{}, verify verifyFunc) (*Variable, 
 }
 
 // Set store data
-func (v *Variable) Set(value interface{}) error {
+func (v *Variable) Set(value any) error {
 	if err := v.verify(value); err != nil {
 		return err
 	}
@@ -279,11 +279,11 @@ func (v *Variable) Name() string {
 }
 
 // Get return value in Variable
-func (v *Variable) Get() interface{} {
+func (v *Variable) Get() any {
 	return v.value
 }
 
-func verifySQLMode(v interface{}) error {
+func verifySQLMode(v any) error {
 	value, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("invalid type of sql mode")
@@ -333,7 +333,7 @@ var SQLModeSet = map[string]bool{
 	"TRADITIONAL": true,
 }
 
-func verifyOnOffInteger(v interface{}) error {
+func verifyOnOffInteger(v any) error {
 	val, ok := v.(int64)
 	if !ok {
 		return fmt.Errorf("value is not int64")
@@ -344,7 +344,7 @@ func verifyOnOffInteger(v interface{}) error {
 	return nil
 }
 
-func verifyInteger(v interface{}) error {
+func verifyInteger(v any) error {
 	_, ok := v.(int64)
 	if !ok {
 		return fmt.Errorf("value is not int64")
@@ -352,7 +352,7 @@ func verifyInteger(v interface{}) error {
 	return nil
 }
 
-func verifyTimeZone(v interface{}) error {
+func verifyTimeZone(v any) error {
 	value, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("invalid type of time_zone")
@@ -385,7 +385,7 @@ func verifyTimeZone(v interface{}) error {
 	return nil
 }
 
-func verifyString(v interface{}) error {
+func verifyString(v any) error {
 	_, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("value is not string type")
@@ -393,6 +393,6 @@ func verifyString(v interface{}) error {
 	return nil
 }
 
-func verifyDefault(v interface{}) error {
+func verifyDefault(v any) error {
 	return nil
 }

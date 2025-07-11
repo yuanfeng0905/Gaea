@@ -147,7 +147,7 @@ func (l *ZapLoggerManager) SetLevel(name, level string) (err error) {
 }
 
 // Warn implements XLogger
-func (l *ZapLoggerManager) Notice(format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Notice(format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -156,7 +156,7 @@ func (l *ZapLoggerManager) Notice(format string, a ...interface{}) (err error) {
 }
 
 // Warn implements XLogger
-func (l *ZapLoggerManager) Warn(format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Warn(format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -165,7 +165,7 @@ func (l *ZapLoggerManager) Warn(format string, a ...interface{}) (err error) {
 }
 
 // Fatal implements XLogger
-func (l *ZapLoggerManager) Fatal(format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Fatal(format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -174,7 +174,7 @@ func (l *ZapLoggerManager) Fatal(format string, a ...interface{}) (err error) {
 }
 
 // Trace implements XLogger
-func (l *ZapLoggerManager) Trace(format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Trace(format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -183,7 +183,7 @@ func (l *ZapLoggerManager) Trace(format string, a ...interface{}) (err error) {
 }
 
 // Debug implements XLogger
-func (l *ZapLoggerManager) Debug(format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Debug(format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -192,7 +192,7 @@ func (l *ZapLoggerManager) Debug(format string, a ...interface{}) (err error) {
 }
 
 // Warnx implements XLogger
-func (l *ZapLoggerManager) Warnx(logID, format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Warnx(logID, format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -201,7 +201,7 @@ func (l *ZapLoggerManager) Warnx(logID, format string, a ...interface{}) (err er
 }
 
 // Fatalx implements XLogger, 不使用 Fatal，会导致进程退出
-func (l *ZapLoggerManager) Fatalx(logID, format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Fatalx(logID, format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -210,7 +210,7 @@ func (l *ZapLoggerManager) Fatalx(logID, format string, a ...interface{}) (err e
 }
 
 // Noticex implements XLogger
-func (l *ZapLoggerManager) Noticex(logID, format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Noticex(logID, format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -219,7 +219,7 @@ func (l *ZapLoggerManager) Noticex(logID, format string, a ...interface{}) (err 
 }
 
 // Tracex implements XLogger
-func (l *ZapLoggerManager) Tracex(logID, format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Tracex(logID, format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}
@@ -228,7 +228,7 @@ func (l *ZapLoggerManager) Tracex(logID, format string, a ...interface{}) (err e
 }
 
 // Debugx implements XLogger
-func (l *ZapLoggerManager) Debugx(logID, format string, a ...interface{}) (err error) {
+func (l *ZapLoggerManager) Debugx(logID, format string, a ...any) (err error) {
 	if l.logger == nil {
 		return
 	}

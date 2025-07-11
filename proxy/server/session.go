@@ -16,19 +16,17 @@ package server
 
 import (
 	"fmt"
-	"github.com/XiaoMi/Gaea/backend"
 	"net"
 	"runtime"
 	"strings"
 	"sync"
-
 	"sync/atomic"
 
-	uber_atomic "go.uber.org/atomic"
-
+	"github.com/XiaoMi/Gaea/backend"
 	"github.com/XiaoMi/Gaea/log"
 	"github.com/XiaoMi/Gaea/mysql"
 	"github.com/XiaoMi/Gaea/util"
+	uber_atomic "go.uber.org/atomic"
 )
 
 // DefaultCapability means default capability
@@ -94,7 +92,7 @@ func (cc *Session) getNamespace() *Namespace {
 }
 
 func (cc *Session) clientConnectionReachLimit() (bool, int) {
-	var current interface{}
+	var current any
 	var ok bool
 
 	//can't find means this is the first connection
@@ -254,7 +252,6 @@ func (cc *Session) Close() {
 	cc.c.Close()
 	log.Debug("client closed, %d", cc.c.GetConnectionID())
 
-	return
 }
 
 // IsClosed check if closed
@@ -267,7 +264,6 @@ func (cc *Session) Run() {
 	defer func() {
 		r := recover()
 		if err, ok := r.(error); ok {
-			const size = 4096
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
 
@@ -364,14 +360,14 @@ func (cc *Session) writeResponse(r Response) error {
 		if rs == nil {
 			return cc.c.writeOK(r.Status)
 		}
-		switch rs.(type) {
+		switch typ := rs.(type) {
 		case *mysql.SessionCloseRespError:
-			cc.c.writeErrorPacket(rs.(*mysql.SessionCloseRespError))
-			return rs.(*mysql.SessionCloseRespError)
+			cc.c.writeErrorPacket(typ)
+			return typ
 		case *mysql.SessionCloseNoRespError:
-			return rs.(*mysql.SessionCloseNoRespError)
+			return typ
 		case error:
-			return cc.c.writeErrorPacket(rs.(error))
+			return cc.c.writeErrorPacket(typ)
 		}
 		return nil
 	case RespOK:

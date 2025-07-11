@@ -24,7 +24,7 @@ import (
 func Test_MycatPartitionModShard_FindForKey(t *testing.T) {
 	tests := []struct {
 		ShardNum    int
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 		Error       error
 	}{
@@ -110,7 +110,7 @@ func Test_MycatPartitionLongShard_FindForKey_BalanceLength_1(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"-1", 3},
@@ -147,7 +147,7 @@ func Test_MycatPartitionLongShard_FindForKey_BalanceLength_2(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"-1", 3},
@@ -184,7 +184,7 @@ func Test_MycatPartitionLongShard_FindForKey_InalanceLength_3(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{uint64(0), 0},
@@ -229,7 +229,7 @@ func Test_MycatPartitionMurmurHashShard_Seed0_Count1(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"", 0},
@@ -362,7 +362,7 @@ func Test_MycatPartitionMurmurHashShard_Seed0_Count2(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"", 0},
@@ -492,7 +492,7 @@ func Test_MycatPartitionMurmurHashShard_IntKey_Seed0_Count2(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{-50, 0},
@@ -618,7 +618,7 @@ func Test_MycatPartitionMurmurHashShard_Seed1_Count4(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"", 2},
@@ -742,7 +742,7 @@ func Test_PartitionPaddingMod_Default_Success(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"1000000000000000", 0},
@@ -879,7 +879,7 @@ func Test_PartitionPaddingMod_CustomParam(t *testing.T) {
 		t.Errorf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"1000000000000000", 0},
@@ -1239,7 +1239,7 @@ func Test_MycatPartitionStringShard_32(t *testing.T) {
 		t.Fatalf("init error: %s", err.Error())
 	}
 	tests := []struct {
-		Key         interface{}
+		Key         any
 		ExpectSlice int
 	}{
 		{"", 0},

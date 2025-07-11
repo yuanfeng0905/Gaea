@@ -32,7 +32,7 @@ func TestSetEqualsWith(t *testing.T) {
 		dst.Set("transaction_isolation", "READ-COMMITTED")
 
 		// Store the original value of dst for comparison
-		originalDstVariables := make(map[string]interface{})
+		originalDstVariables := make(map[string]any)
 		for key, v := range dst.variables {
 			originalDstVariables[key] = v.Get()
 		}
@@ -67,7 +67,7 @@ func TestSetEqualsWith(t *testing.T) {
 		s.Set("max_execution_time", int64(1000))
 
 		// Store the original value of dst for comparison
-		originalDstVariables := make(map[string]interface{})
+		originalDstVariables := make(map[string]any)
 		for key, v := range dst.variables {
 			originalDstVariables[key] = v.Get()
 		}
@@ -105,7 +105,7 @@ func TestSetEqualsWith(t *testing.T) {
 		dst.Set("unique_checks", int64(1))
 
 		// Store the original value of dst for comparison
-		originalDstVariables := make(map[string]interface{})
+		originalDstVariables := make(map[string]any)
 		for key, v := range dst.variables {
 			originalDstVariables[key] = v.Get()
 		}
@@ -144,7 +144,7 @@ func TestSetEqualsWith(t *testing.T) {
 		dst.Set("key4", "value4")     // unique to dst
 
 		// Store the original value of dst for comparison
-		originalDstVariables := make(map[string]interface{})
+		originalDstVariables := make(map[string]any)
 		for key, v := range dst.variables {
 			originalDstVariables[key] = v.Get()
 		}
@@ -194,7 +194,7 @@ func TestSetEqualsWith(t *testing.T) {
 		dst.Set("flag4", false) // unique to dst
 
 		// Store the original value of dst for comparison
-		originalDstVariables := make(map[string]interface{})
+		originalDstVariables := make(map[string]any)
 		for key, v := range dst.variables {
 			originalDstVariables[key] = v.Get()
 		}
@@ -243,7 +243,7 @@ func TestSetEqualsWith(t *testing.T) {
 		dst.Set("key3", 300) // overlaps with s, same value
 		dst.Set("key4", 400) // unique to dst
 		// Store the original value of dst for comparison
-		originalDstVariables := make(map[string]interface{})
+		originalDstVariables := make(map[string]any)
 		for key, v := range dst.variables {
 			originalDstVariables[key] = v.Get()
 		}

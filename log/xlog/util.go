@@ -96,7 +96,7 @@ func formatLog(body *string, fields ...string) string {
 	return buffer.String()
 }
 
-func formatValue(format string, a ...interface{}) (result string) {
+func formatValue(format string, a ...any) (result string) {
 	if len(a) == 0 {
 		result = format
 		return
@@ -129,7 +129,7 @@ func formatLineInfo(runtime bool, functionName, filename, logText string, lineno
 	return buffer.String()
 }
 
-func newError(format string, a ...interface{}) error {
+func newError(format string, a ...any) error {
 	err := fmt.Sprintf(format, a...)
 	pc, file, line, ok := runtime.Caller(1)
 	if !ok {

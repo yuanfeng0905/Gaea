@@ -366,7 +366,7 @@ func (rp *ResourcePool) scaleInResources() {
 
 func (rp *ResourcePool) recordWait(start time.Time) {
 	rp.waitCount.Add(1)
-	rp.waitTime.Add(time.Now().Sub(start))
+	rp.waitTime.Add(time.Since(start))
 }
 
 // SetIdleTimeout sets the idle timeout. It can only be used if there was an

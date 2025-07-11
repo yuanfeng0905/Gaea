@@ -16,6 +16,7 @@ package plan
 
 import (
 	"fmt"
+
 	"github.com/XiaoMi/Gaea/mysql"
 	"github.com/XiaoMi/Gaea/parser/ast"
 	"github.com/XiaoMi/Gaea/proxy/router"
@@ -80,7 +81,7 @@ func buildExplainPlan(stmt *ast.ExplainStmt, phyDBs map[string]string, db, sql s
 
 // ExecuteIn implement Plan
 func (p *ExplainPlan) ExecuteIn(reqCtx *util.RequestContext, se Executor) (*mysql.Result, error) {
-	var rows [][]interface{}
+	var rows [][]any
 	var names = []string{"shard_type", "slice", "db", "sql", "select_type", "table", "partitions", "type",
 		"possible_keys", "key", "key_len", "ref", "rows", "filtered", "Extra"}
 
@@ -93,7 +94,7 @@ func (p *ExplainPlan) ExecuteIn(reqCtx *util.RequestContext, se Executor) (*mysq
 				}
 
 				for i := 0; i < len(s.Resultset.Values); i++ {
-					row := []interface{}{p.shardType, slice, db, sql}
+					row := []any{p.shardType, slice, db, sql}
 					for j := 1; j < len(s.Resultset.Values[i]); j++ {
 						if s.Resultset.Values[i][j] == nil {
 							s.Resultset.Values[i][j] = "NULL"

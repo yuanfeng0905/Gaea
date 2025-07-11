@@ -38,43 +38,43 @@ func newMockLogger() XLogger {
 func (m *MockLogger) Init(config map[string]string) error { return nil }
 func (m *MockLogger) ReOpen() error                       { return nil }
 func (m *MockLogger) SetLevel(level string)               {}
-func (m *MockLogger) Warn(format string, a ...interface{}) error {
+func (m *MockLogger) Warn(format string, a ...any) error {
 	fmt.Println("Warn:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Fatal(format string, a ...interface{}) error {
+func (m *MockLogger) Fatal(format string, a ...any) error {
 	fmt.Println("Fatal:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Notice(format string, a ...interface{}) error {
+func (m *MockLogger) Notice(format string, a ...any) error {
 	fmt.Println("Notice:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Trace(format string, a ...interface{}) error {
+func (m *MockLogger) Trace(format string, a ...any) error {
 	fmt.Println("Trace:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Debug(format string, a ...interface{}) error {
+func (m *MockLogger) Debug(format string, a ...any) error {
 	fmt.Println("Debug:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Warnx(logID, format string, a ...interface{}) error {
+func (m *MockLogger) Warnx(logID, format string, a ...any) error {
 	fmt.Println("Warnx:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Fatalx(logID, format string, a ...interface{}) error {
+func (m *MockLogger) Fatalx(logID, format string, a ...any) error {
 	fmt.Println("Fatalx:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Noticex(logID, format string, a ...interface{}) error {
+func (m *MockLogger) Noticex(logID, format string, a ...any) error {
 	fmt.Println("Noticex:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Tracex(logID, format string, a ...interface{}) error {
+func (m *MockLogger) Tracex(logID, format string, a ...any) error {
 	fmt.Println("Tracex:", fmt.Sprintf(format, a...))
 	return nil
 }
-func (m *MockLogger) Debugx(logID, format string, a ...interface{}) error {
+func (m *MockLogger) Debugx(logID, format string, a ...any) error {
 	fmt.Println("Debugx:", fmt.Sprintf(format, a...))
 	return nil
 }

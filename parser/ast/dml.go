@@ -1476,7 +1476,7 @@ type DeleteStmt struct {
 func (n *DeleteStmt) Restore(ctx *format.RestoreCtx) error {
 	ctx.WriteKeyWord("DELETE ")
 
-	if n.TableHints != nil && len(n.TableHints) != 0 {
+	if len(n.TableHints) != 0 {
 		ctx.WritePlain("/*+ ")
 		for i, tableHint := range n.TableHints {
 			if err := tableHint.Restore(ctx); err != nil {
@@ -1618,7 +1618,7 @@ type UpdateStmt struct {
 func (n *UpdateStmt) Restore(ctx *format.RestoreCtx) error {
 	ctx.WriteKeyWord("UPDATE ")
 
-	if n.TableHints != nil && len(n.TableHints) != 0 {
+	if len(n.TableHints) != 0 {
 		ctx.WritePlain("/*+ ")
 		for i, tableHint := range n.TableHints {
 			if err := tableHint.Restore(ctx); err != nil {

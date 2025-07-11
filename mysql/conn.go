@@ -126,7 +126,7 @@ type Conn struct {
 var bufPool = bucketpool.New(MinPacketSize, MaxPacketSize)
 
 // writersPool is used for pooling bufio.Writer objects.
-var writersPool = sync.Pool{New: func() interface{} { return bufio.NewWriterSize(nil, WritePacketSize) }}
+var writersPool = sync.Pool{New: func() any { return bufio.NewWriterSize(nil, WritePacketSize) }}
 
 // NewConn is an internal method to create a Conn. Used by client and server
 // side for common creation code.
@@ -612,7 +612,7 @@ func (c *Conn) WriteOKPacketWithEOFHeader(affectedRows, lastInsertID uint64, fla
 // WriteErrorPacket writes an error packet.
 // Server -> Client.
 // This method returns a generic error, not a SQLError.
-func (c *Conn) WriteErrorPacket(errorCode uint16, sqlState string, format string, args ...interface{}) error {
+func (c *Conn) WriteErrorPacket(errorCode uint16, sqlState string, format string, args ...any) error {
 	errorMessage := fmt.Sprintf(format, args...)
 	length := 1 + 2 + 1 + 5 + len(errorMessage)
 	data := c.StartEphemeralPacket(length)
@@ -635,11 +635,12 @@ func (c *Conn) WriteErrorPacket(errorCode uint16, sqlState string, format string
 // WriteErrorPacketFromError writes an error packet, from a regular error.
 // See writeErrorPacket for other info.
 func (c *Conn) WriteErrorPacketFromError(err error) error {
-	if se, ok := err.(*SQLError); ok {
+	var se *SQLError
+	if errors.As(err, &se) {
 		return c.WriteErrorPacket(se.SQLCode(), se.SQLState(), "%v", se.Message)
 	}
 
-	if err.Error() == ErrClientQpsLimitedMsg {
+	if errors.Is(err, ErrClientQpsLimitedMsg) {
 		return c.WriteErrorPacket(ErrClientQpsLimited, DefaultMySQLState, "%v", err)
 	}
 

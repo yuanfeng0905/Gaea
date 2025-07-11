@@ -16,9 +16,10 @@ package plan
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/XiaoMi/Gaea/parser"
 	"github.com/XiaoMi/Gaea/proxy/router"
-	"strings"
 
 	"github.com/XiaoMi/Gaea/mysql"
 	"github.com/XiaoMi/Gaea/parser/ast"
@@ -206,9 +207,9 @@ func createLastInsertIDResult(lastInsertID uint64, asName string) *mysql.Result 
 
 	rows = append(rows, []uint64{lastInsertID})
 
-	var values = make([][]interface{}, len(rows))
+	var values = make([][]any, len(rows))
 	for i := range rows {
-		values[i] = make([]interface{}, column)
+		values[i] = make([]any, column)
 		for j := range rows[i] {
 			values[i][j] = rows[i][j]
 		}

@@ -939,7 +939,7 @@ func (dc *DirectConnection) readResultRows(result *mysql.Result, isBinary bool, 
 		}
 	}
 
-	result.Values = make([][]interface{}, len(result.RowDatas))
+	result.Values = make([][]any, len(result.RowDatas))
 	for i := range result.Values {
 		result.Values[i], err = result.RowDatas[i].Parse(result.Fields, isBinary)
 		if err != nil {
@@ -1065,7 +1065,7 @@ func appendSetCharset(buf *bytes.Buffer, charset string, collation string) {
 	buf.WriteString("'")
 }
 
-func appendSetVariable(buf *bytes.Buffer, key string, value interface{}) {
+func appendSetVariable(buf *bytes.Buffer, key string, value any) {
 	if buf.Len() != 0 {
 		buf.WriteString(",")
 	} else {

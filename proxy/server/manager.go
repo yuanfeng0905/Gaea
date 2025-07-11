@@ -17,6 +17,7 @@ package server
 import (
 	"bytes"
 	"crypto/md5"
+	errs "errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -357,7 +358,7 @@ func (m *Manager) RecordSessionSQLMetrics(reqCtx *util.RequestContext, se *Sessi
 	}
 
 	// record sql timing
-	if !(err != nil && err.Error() == mysql.ErrClientQpsLimitedMsg) {
+	if !(err != nil && errs.Is(err, mysql.ErrClientQpsLimitedMsg)) {
 		m.statistics.recordSessionSQLTiming(namespace, operation, startTime)
 	}
 
@@ -897,7 +898,7 @@ func parseProxyStatsConfig(cfg *models.Proxy) (*proxyStatsConfig, error) {
 // Init init StatisticManager
 func (s *StatisticManager) Init(cfg *models.Proxy) error {
 	s.startTime = time.Now().Unix()
-	s.closeChan = make(chan bool, 0)
+	s.closeChan = make(chan bool)
 	s.handlers = make(map[string]http.Handler)
 	s.slowSQLTime = cfg.SlowSQLTime
 	s.CPUNums = cfg.NumCPU

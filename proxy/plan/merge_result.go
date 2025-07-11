@@ -16,9 +16,10 @@ package plan
 
 import (
 	"fmt"
-	"github.com/shopspring/decimal"
 	"strconv"
 	"strings"
+
+	"github.com/shopspring/decimal"
 
 	"github.com/XiaoMi/Gaea/mysql"
 	"github.com/XiaoMi/Gaea/parser/ast"
@@ -27,7 +28,7 @@ import (
 )
 
 // ResultRow is one Row in Result
-type ResultRow []interface{}
+type ResultRow []any
 
 // GetInt get int value from column
 // copy from Resultset.GetInt()
@@ -115,12 +116,12 @@ func (r ResultRow) GetDecimal(column int) (decimal.Decimal, error) {
 }
 
 // SetValue set value to column
-func (r ResultRow) SetValue(column int, value interface{}) {
+func (r ResultRow) SetValue(column int, value any) {
 	r[column] = value
 }
 
 // GetValue get value from column
-func (r ResultRow) GetValue(column int) interface{} {
+func (r ResultRow) GetValue(column int) any {
 	return r[column]
 }
 
@@ -555,7 +556,7 @@ func buildSelectGroupByResult(p *SelectPlan, r *mysql.Result) error {
 
 	// 根据group by的列进行结果聚合
 	for i, v := range r.Values {
-		keySlice := make([]interface{}, 0)
+		keySlice := make([]any, 0)
 		for _, index := range p.GetGroupByColumnInfo() {
 			keySlice = append(keySlice, v[index+deltaColumnCount])
 		}
@@ -735,7 +736,7 @@ func GenerateSelectResultRowData(r *mysql.Result) error {
 }
 
 // copy from server.generateMapKey()
-func generateMapKey(groupColumns []interface{}) (string, error) {
+func generateMapKey(groupColumns []any) (string, error) {
 	bk := make([]byte, 0, 8)
 	separatorBuf, err := formatValue("+")
 	if err != nil {
@@ -756,7 +757,7 @@ func generateMapKey(groupColumns []interface{}) (string, error) {
 
 // copy from server.formatValue()
 // formatValue encode value into a string format
-func formatValue(value interface{}) ([]byte, error) {
+func formatValue(value any) ([]byte, error) {
 	if value == nil {
 		return hack.Slice("NULL"), nil
 	}

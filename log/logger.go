@@ -16,6 +16,7 @@ package log
 
 import (
 	"fmt"
+
 	"github.com/XiaoMi/Gaea/log/xlog"
 )
 
@@ -30,17 +31,17 @@ var logger Logger
 type Logger interface {
 	SetLevel(name, level string) error
 
-	Debug(format string, a ...interface{}) (err error)
-	Trace(format string, a ...interface{}) (err error)
-	Notice(format string, a ...interface{}) (err error)
-	Warn(format string, a ...interface{}) (err error)
-	Fatal(format string, a ...interface{}) (err error)
+	Debug(format string, a ...any) (err error)
+	Trace(format string, a ...any) (err error)
+	Notice(format string, a ...any) (err error)
+	Warn(format string, a ...any) (err error)
+	Fatal(format string, a ...any) (err error)
 
-	Debugx(logID, format string, a ...interface{}) (err error)
-	Tracex(logID, format string, a ...interface{}) (err error)
-	Noticex(logID, format string, a ...interface{}) (err error)
-	Warnx(logID, format string, a ...interface{}) (err error)
-	Fatalx(logID, format string, a ...interface{}) (err error)
+	Debugx(logID, format string, a ...any) (err error)
+	Tracex(logID, format string, a ...any) (err error)
+	Noticex(logID, format string, a ...any) (err error)
+	Warnx(logID, format string, a ...any) (err error)
+	Fatalx(logID, format string, a ...any) (err error)
 
 	Close()
 }
@@ -64,52 +65,52 @@ func SetGlobalLogger(lg Logger) {
 }
 
 // Debug log debug message.
-func Debug(format string, a ...interface{}) (err error) {
+func Debug(format string, a ...any) (err error) {
 	return logger.Debug(format, a...)
 }
 
 // Debugx log debug message with logID.
-func Debugx(logID, format string, a ...interface{}) (err error) {
+func Debugx(logID, format string, a ...any) (err error) {
 	return logger.Debugx(logID, format, a...)
 }
 
 // Trace log trace message.
-func Trace(format string, a ...interface{}) (err error) {
+func Trace(format string, a ...any) (err error) {
 	return logger.Trace(format, a...)
 }
 
 // Tracex log trace message with logID.
-func Tracex(logID, format string, a ...interface{}) (err error) {
+func Tracex(logID, format string, a ...any) (err error) {
 	return logger.Tracex(logID, format, a...)
 }
 
 // Notice log notice message.
-func Notice(format string, a ...interface{}) (err error) {
+func Notice(format string, a ...any) (err error) {
 	return logger.Notice(format, a...)
 }
 
 // Noticex log notice message with logID.
-func Noticex(logID, format string, a ...interface{}) (err error) {
+func Noticex(logID, format string, a ...any) (err error) {
 	return logger.Noticex(logID, format, a...)
 }
 
 // Warn log warn message.
-func Warn(format string, a ...interface{}) (err error) {
+func Warn(format string, a ...any) (err error) {
 	return logger.Warn(format, a...)
 }
 
 // Warnx log warn message with logID.
-func Warnx(logID, format string, a ...interface{}) (err error) {
+func Warnx(logID, format string, a ...any) (err error) {
 	return logger.Warnx(logID, format, a...)
 }
 
 // Fatal log fatal message.
-func Fatal(format string, a ...interface{}) (err error) {
+func Fatal(format string, a ...any) (err error) {
 	return logger.Fatal(format, a...)
 }
 
 // Fatalx log fatal message with logID.
-func Fatalx(logID, format string, a ...interface{}) (err error) {
+func Fatalx(logID, format string, a ...any) (err error) {
 	return logger.Fatalx(logID, format, a...)
 }
 

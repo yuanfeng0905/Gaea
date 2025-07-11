@@ -308,7 +308,7 @@ func checkInstanceStatus(name string, cp ConnectionPool, healthCheckSql string) 
 
 func allSlaveIsOffline(SlaveStatusMap *sync.Map) bool {
 	var result = true
-	SlaveStatusMap.Range(func(k, v interface{}) bool {
+	SlaveStatusMap.Range(func(k, v any) bool {
 		if v == StatusUp {
 			result = false
 			return false
@@ -563,7 +563,7 @@ func GetSlaveStatus(conn PooledConnect) (bool, SlaveStatus, error) {
 
 	for _, f := range res.Fields {
 		fieldName := string(f.Name)
-		var col interface{}
+		var col any
 		col, err = res.GetValueByName(0, fieldName)
 		if err != nil {
 			_ = log.Warn("get field name Get '%s' failed in SlaveStatus, err: %v", fieldName, err)

@@ -48,7 +48,7 @@ var (
 	// ErrTxNsChanged namespace changed in transaction error
 	ErrTxNsChanged = errors.New("namespace changed in transaction when keep session")
 	// ErrClientQpsLimitedMsg client qps is limited error
-	ErrClientQpsLimitedMsg = "client qps limit"
+	ErrClientQpsLimitedMsg = errors.New("client qps limit")
 )
 
 // SQLError contains error code、SQLSTATE and message string
@@ -74,7 +74,7 @@ func (se *SQLError) SQLState() string {
 }
 
 // NewDefaultError default mysql error, must adapt errname message format
-func NewDefaultError(errCode uint16, args ...interface{}) *SQLError {
+func NewDefaultError(errCode uint16, args ...any) *SQLError {
 	e := new(SQLError)
 	e.Code = errCode
 
@@ -110,7 +110,7 @@ func NewError(errCode uint16, message string) *SQLError {
 }
 
 // NewErrf creates a SQL error, with an error code and a format specifier.
-func NewErrf(errCode uint16, format string, args ...interface{}) *SQLError {
+func NewErrf(errCode uint16, format string, args ...any) *SQLError {
 	e := &SQLError{Code: errCode}
 
 	if s, ok := MySQLState[errCode]; ok {
@@ -134,7 +134,8 @@ type SessionCloseNoRespError struct {
 }
 
 type SessionCloseRespError struct {
-	s string
+	s   string
+	err error
 }
 
 func NewSessionCloseError(s string) SessionCloseError {
@@ -150,11 +151,23 @@ func (e *SessionCloseNoRespError) HasResponse() bool {
 }
 
 func NewSessionCloseRespError(s string) SessionCloseError {
-	return &SessionCloseRespError{s}
+	return &SessionCloseRespError{s: s}
+}
+
+func NewSessionCloseRespErrorWithErr(err error) SessionCloseError {
+	return &SessionCloseRespError{err: err}
 }
 
 func (e *SessionCloseRespError) Error() string {
+	if e.err != nil {
+		return e.s + ": " + e.err.Error()
+	}
 	return e.s
+}
+
+// Unwrap returns the underlying error, if any.
+func (e *SessionCloseRespError) Unwrap() error {
+	return e.err
 }
 
 func (e *SessionCloseRespError) HasResponse() bool {

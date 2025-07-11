@@ -1,6 +1,6 @@
 {
     "name": "test_namespace_2",
-    "online": true,
+    "online": false,
     "read_only": false,
     "allowed_dbs": {
         "sbtest1": true

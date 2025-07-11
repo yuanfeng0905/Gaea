@@ -109,12 +109,11 @@ func AppendLenEncInt(data []byte, i uint64) []byte {
 	case i <= 0xffffff:
 		return append(data, 0xfd, byte(i), byte(i>>8), byte(i>>16))
 
-	case i <= 0xffffffffffffffff:
+		// math.MaxUint64 is 0xffffffffffffffff, so we can use this to
+	default:
 		return append(data, 0xfe, byte(i), byte(i>>8), byte(i>>16), byte(i>>24),
 			byte(i>>32), byte(i>>40), byte(i>>48), byte(i>>56))
 	}
-
-	return data
 }
 
 // LenNullString return length Null terminated string
@@ -488,7 +487,7 @@ func FormatBinaryTime(n int, data []byte) ([]byte, error) {
 }
 
 // AppendBinaryValue encode binary-type value of prepare binary protocol according to type of value
-func AppendBinaryValue(data []byte, fieldType uint8, value interface{}) ([]byte, error) {
+func AppendBinaryValue(data []byte, fieldType uint8, value any) ([]byte, error) {
 	// constructor phase
 	var t []byte
 	switch v := value.(type) {

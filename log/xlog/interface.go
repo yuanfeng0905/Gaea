@@ -29,34 +29,34 @@ type XLogger interface {
 	SetSkip(skip int)
 
 	// 打印Debug日志. 当日志级别大于Debug时, 不会输出任何日志
-	Debug(format string, a ...interface{}) error
+	Debug(format string, a ...any) error
 
 	// 打印Trace日志. 当日志级别大于Trace时, 不会输出任何日志
-	Trace(format string, a ...interface{}) error
+	Trace(format string, a ...any) error
 
 	// 打印Notice日志. 当日志级别大于Notice时, 不会输出任何日志
-	Notice(format string, a ...interface{}) error
+	Notice(format string, a ...any) error
 
 	// 打印Warn日志. 当日志级别大于Warn时, 不会输出任何日志
-	Warn(format string, a ...interface{}) error
+	Warn(format string, a ...any) error
 
 	// 打印Fatal日志. 当日志级别大于Fatal时, 不会输出任何日志
-	Fatal(format string, a ...interface{}) error
+	Fatal(format string, a ...any) error
 
 	// 打印Debug日志, 需要传入logID. 当日志级别大于Debug时, 不会输出任何日志
-	Debugx(logID, format string, a ...interface{}) error
+	Debugx(logID, format string, a ...any) error
 
 	// 打印Trace日志, 需要传入logID. 当日志级别大于Trace时, 不会输出任何日志
-	Tracex(logID, format string, a ...interface{}) error
+	Tracex(logID, format string, a ...any) error
 
 	// 打印Notice日志, 需要传入logID. 当日志级别大于Notice时, 不会输出任何日志
-	Noticex(logID, format string, a ...interface{}) error
+	Noticex(logID, format string, a ...any) error
 
 	// 打印Warn日志, 需要传入logID. 当日志级别大于Warn时, 不会输出任何日志
-	Warnx(logID, format string, a ...interface{}) error
+	Warnx(logID, format string, a ...any) error
 
 	// 打印Fatal日志, 需要传入logID. 当日志级别大于Fatal时, 不会输出任何日志
-	Fatalx(logID, format string, a ...interface{}) error
+	Fatalx(logID, format string, a ...any) error
 
 	// 关闭日志库. 注意: 如果没有调用Close()关闭日志库的话, 将会造成文件句柄泄露
 	Close()

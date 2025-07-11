@@ -65,7 +65,7 @@ type Rule interface {
 	GetShardingColumn() string
 	IsLinkedRule() bool
 	GetShard() Shard
-	FindTableIndex(key interface{}) (int, error)
+	FindTableIndex(key any) (int, error)
 	GetSlice(i int) string // i is slice index
 	GetSliceIndexFromTableIndex(i int) int
 	GetSlices() []string
@@ -136,7 +136,7 @@ func (r *BaseRule) GetShard() Shard {
 	return r.shard
 }
 
-func (r *BaseRule) FindTableIndex(key interface{}) (int, error) {
+func (r *BaseRule) FindTableIndex(key any) (int, error) {
 	return r.shard.FindForKey(key)
 }
 
@@ -222,7 +222,7 @@ func (l *LinkedRule) GetShard() Shard {
 	return l.linkToRule.GetShard()
 }
 
-func (l *LinkedRule) FindTableIndex(key interface{}) (int, error) {
+func (l *LinkedRule) FindTableIndex(key any) (int, error) {
 	return l.linkToRule.FindTableIndex(key)
 }
 

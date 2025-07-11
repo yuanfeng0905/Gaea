@@ -45,14 +45,14 @@ func (b *BoolIndex) Get() (int32, int32, bool) {
 }
 
 // ItoString interface to string
-func ItoString(a interface{}) (bool, string) {
-	switch a.(type) {
+func ItoString(a any) (bool, string) {
+	switch typ := a.(type) {
 	case nil:
 		return false, "NULL"
 	case []byte:
-		return true, string(a.([]byte))
+		return true, string(typ)
 	default:
-		return false, fmt.Sprintf("%v", a)
+		return false, fmt.Sprintf("%v", typ)
 	}
 }
 

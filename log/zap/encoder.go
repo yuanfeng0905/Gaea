@@ -68,7 +68,7 @@ func (e *ZapEncoder) AddFloat64(key string, val float64) {
 func (e *ZapEncoder) AddInt64(key string, val int64) {
 }
 
-func (e *ZapEncoder) AddReflected(key string, obj interface{}) error {
+func (e *ZapEncoder) AddReflected(key string, obj any) error {
 	return nil
 }
 

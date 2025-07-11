@@ -33,6 +33,10 @@ import (
 	"github.com/XiaoMi/Gaea/util"
 )
 
+const (
+	size = 4096
+)
+
 // Parse parse sql
 func (se *SessionExecutor) Parse(sql string) (ast.StmtNode, error) {
 	return parser.New().ParseOneStmt(sql, "", "")
@@ -45,7 +49,6 @@ func (se *SessionExecutor) handleQuery(sql string) (r *mysql.Result, err error) 
 			log.Warn("handle query command failed, error: %v, sql: %s", e, sql)
 
 			if err, ok := e.(error); ok {
-				const size = 4096
 				buf := make([]byte, size)
 				buf = buf[:runtime.Stack(buf, false)]
 
@@ -69,14 +72,14 @@ func (se *SessionExecutor) handleQuery(sql string) (r *mysql.Result, err error) 
 	if se.GetNamespace().clientQPSLimit > 0 && se.GetNamespace().supportLimitTx && !se.GetNamespace().limiter.Allow() {
 		if se.isInTransaction() {
 			// if client transaction is limited, gaea will actively close client connection
-			err = mysql.NewSessionCloseRespError(mysql.ErrClientQpsLimitedMsg)
+			err = mysql.NewSessionCloseRespErrorWithErr(mysql.ErrClientQpsLimitedMsg)
 		} else {
 			// if non-transaction connection is limited, gaea will not close client connection
-			err = fmt.Errorf(mysql.ErrClientQpsLimitedMsg)
+			err = mysql.ErrClientQpsLimitedMsg
 		}
 	} else if se.GetNamespace().clientQPSLimit > 0 && !se.GetNamespace().supportLimitTx && !se.isInTransaction() && !se.GetNamespace().limiter.Allow() {
 		// if non-transaction connection is limited, gaea will not close client connection
-		err = fmt.Errorf(mysql.ErrClientQpsLimitedMsg)
+		err = mysql.ErrClientQpsLimitedMsg
 	} else {
 		if ns.supportMultiQuery && se.session.c.capability&mysql.ClientMultiStatements != 0 {
 			r, err = se.doMultiStmts(reqCtx, sql)
@@ -398,11 +401,12 @@ func (se *SessionExecutor) handleSetVariable(sql string, v *ast.VariableAssignme
 
 	case "autocommit":
 		value := getVariableExprResult(v.Value)
-		if value == mysql.KeywordDefault || value == "on" || value == "1" {
+		switch value {
+		case mysql.KeywordDefault, "on", "1":
 			return se.handleSetAutoCommit(true) // default set autocommit = 1
-		} else if value == "off" || value == "0" {
+		case "off", "0":
 			return se.handleSetAutoCommit(false)
-		} else {
+		default:
 			return mysql.NewDefaultError(mysql.ErrWrongValueForVar, name, value)
 		}
 	case "setnames": // SetNAMES represents SET NAMES 'xxx' COLLATE 'xxx'

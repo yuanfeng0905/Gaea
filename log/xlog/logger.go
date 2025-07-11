@@ -252,7 +252,7 @@ func (l *LogManager) SetLevel(name, level string) (err error) {
 }
 
 // Warn implements XLogger
-func (l *LogManager) Warn(format string, a ...interface{}) (err error) {
+func (l *LogManager) Warn(format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -267,7 +267,7 @@ func (l *LogManager) Warn(format string, a ...interface{}) (err error) {
 }
 
 // Fatal implements XLogger
-func (l *LogManager) Fatal(format string, a ...interface{}) (err error) {
+func (l *LogManager) Fatal(format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -282,7 +282,7 @@ func (l *LogManager) Fatal(format string, a ...interface{}) (err error) {
 }
 
 // Notice implements XLogger
-func (l *LogManager) Notice(format string, a ...interface{}) (err error) {
+func (l *LogManager) Notice(format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -297,7 +297,7 @@ func (l *LogManager) Notice(format string, a ...interface{}) (err error) {
 }
 
 // Trace implements XLogger
-func (l *LogManager) Trace(format string, a ...interface{}) (err error) {
+func (l *LogManager) Trace(format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -312,7 +312,7 @@ func (l *LogManager) Trace(format string, a ...interface{}) (err error) {
 }
 
 // Debug implements XLogger
-func (l *LogManager) Debug(format string, a ...interface{}) (err error) {
+func (l *LogManager) Debug(format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -327,7 +327,7 @@ func (l *LogManager) Debug(format string, a ...interface{}) (err error) {
 }
 
 // Warnx implements XLogger
-func (l *LogManager) Warnx(logID, format string, a ...interface{}) (err error) {
+func (l *LogManager) Warnx(logID, format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -342,7 +342,7 @@ func (l *LogManager) Warnx(logID, format string, a ...interface{}) (err error) {
 }
 
 // Fatalx implements XLogger
-func (l *LogManager) Fatalx(logID, format string, a ...interface{}) (err error) {
+func (l *LogManager) Fatalx(logID, format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -357,7 +357,7 @@ func (l *LogManager) Fatalx(logID, format string, a ...interface{}) (err error) 
 }
 
 // Noticex implements XLogger
-func (l *LogManager) Noticex(logID, format string, a ...interface{}) (err error) {
+func (l *LogManager) Noticex(logID, format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -372,7 +372,7 @@ func (l *LogManager) Noticex(logID, format string, a ...interface{}) (err error)
 }
 
 // Tracex implements XLogger
-func (l *LogManager) Tracex(logID, format string, a ...interface{}) (err error) {
+func (l *LogManager) Tracex(logID, format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 
@@ -387,7 +387,7 @@ func (l *LogManager) Tracex(logID, format string, a ...interface{}) (err error) 
 }
 
 // Debugx implements XLogger
-func (l *LogManager) Debugx(logID, format string, a ...interface{}) (err error) {
+func (l *LogManager) Debugx(logID, format string, a ...any) (err error) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
 

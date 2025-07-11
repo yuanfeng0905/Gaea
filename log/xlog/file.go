@@ -278,7 +278,7 @@ func (p *XFileLog) ReOpen() error {
 }
 
 // Warn implements XLogger
-func (p *XFileLog) Warn(format string, a ...interface{}) error {
+func (p *XFileLog) Warn(format string, a ...any) error {
 	if p.level > WarnLevel {
 		return nil
 	}
@@ -287,7 +287,7 @@ func (p *XFileLog) Warn(format string, a ...interface{}) error {
 }
 
 // Warnx implements XLogger
-func (p *XFileLog) Warnx(logID, format string, a ...interface{}) error {
+func (p *XFileLog) Warnx(logID, format string, a ...any) error {
 	if p.level > WarnLevel {
 		return nil
 	}
@@ -295,7 +295,7 @@ func (p *XFileLog) Warnx(logID, format string, a ...interface{}) error {
 	return p.warnx(logID, format, a...)
 }
 
-func (p *XFileLog) warnx(logID, format string, a ...interface{}) error {
+func (p *XFileLog) warnx(logID, format string, a ...any) error {
 	logText := formatValue(format, a...)
 	fun, filename, lineno := getRuntimeInfo(p.skip)
 	logText = formatLineInfo(p.runtime, fun, filepath.Base(filename), logText, lineno)
@@ -305,7 +305,7 @@ func (p *XFileLog) warnx(logID, format string, a ...interface{}) error {
 }
 
 // Fatal implements XLogger
-func (p *XFileLog) Fatal(format string, a ...interface{}) error {
+func (p *XFileLog) Fatal(format string, a ...any) error {
 	if p.level > FatalLevel {
 		return nil
 	}
@@ -314,7 +314,7 @@ func (p *XFileLog) Fatal(format string, a ...interface{}) error {
 }
 
 // Fatalx implements XLogger
-func (p *XFileLog) Fatalx(logID, format string, a ...interface{}) error {
+func (p *XFileLog) Fatalx(logID, format string, a ...any) error {
 	if p.level > FatalLevel {
 		return nil
 	}
@@ -322,7 +322,7 @@ func (p *XFileLog) Fatalx(logID, format string, a ...interface{}) error {
 	return p.fatalx(logID, format, a...)
 }
 
-func (p *XFileLog) fatalx(logID, format string, a ...interface{}) error {
+func (p *XFileLog) fatalx(logID, format string, a ...any) error {
 	logText := formatValue(format, a...)
 	fun, filename, lineno := getRuntimeInfo(p.skip)
 	logText = formatLineInfo(p.runtime, fun, filepath.Base(filename), logText, lineno)
@@ -332,7 +332,7 @@ func (p *XFileLog) fatalx(logID, format string, a ...interface{}) error {
 }
 
 // Notice implements XLogger
-func (p *XFileLog) Notice(format string, a ...interface{}) error {
+func (p *XFileLog) Notice(format string, a ...any) error {
 	if p.level > NoticeLevel {
 		return nil
 	}
@@ -340,14 +340,14 @@ func (p *XFileLog) Notice(format string, a ...interface{}) error {
 }
 
 // Noticex implements XLogger
-func (p *XFileLog) Noticex(logID, format string, a ...interface{}) error {
+func (p *XFileLog) Noticex(logID, format string, a ...any) error {
 	if p.level > NoticeLevel {
 		return nil
 	}
 	return p.noticex(logID, format, a...)
 }
 
-func (p *XFileLog) noticex(logID, format string, a ...interface{}) error {
+func (p *XFileLog) noticex(logID, format string, a ...any) error {
 	logText := formatValue(format, a...)
 	fun, filename, lineno := getRuntimeInfo(p.skip)
 	logText = formatLineInfo(p.runtime, fun, filepath.Base(filename), logText, lineno)
@@ -356,16 +356,16 @@ func (p *XFileLog) noticex(logID, format string, a ...interface{}) error {
 }
 
 // Trace implements XLogger
-func (p *XFileLog) Trace(format string, a ...interface{}) error {
+func (p *XFileLog) Trace(format string, a ...any) error {
 	return p.tracex(XFileLogDefaultLogID, format, a...)
 }
 
 // Tracex implements XLogger
-func (p *XFileLog) Tracex(logID, format string, a ...interface{}) error {
+func (p *XFileLog) Tracex(logID, format string, a ...any) error {
 	return p.tracex(logID, format, a...)
 }
 
-func (p *XFileLog) tracex(logID, format string, a ...interface{}) error {
+func (p *XFileLog) tracex(logID, format string, a ...any) error {
 	if p.level > TraceLevel {
 		return nil
 	}
@@ -379,11 +379,11 @@ func (p *XFileLog) tracex(logID, format string, a ...interface{}) error {
 }
 
 // Debug implements XLogger
-func (p *XFileLog) Debug(format string, a ...interface{}) error {
+func (p *XFileLog) Debug(format string, a ...any) error {
 	return p.debugx(XFileLogDefaultLogID, format, a...)
 }
 
-func (p *XFileLog) debugx(logID, format string, a ...interface{}) error {
+func (p *XFileLog) debugx(logID, format string, a ...any) error {
 	if p.level > DebugLevel {
 		return nil
 	}
@@ -396,7 +396,7 @@ func (p *XFileLog) debugx(logID, format string, a ...interface{}) error {
 }
 
 // Debugx implements XLogger
-func (p *XFileLog) Debugx(logID, format string, a ...interface{}) error {
+func (p *XFileLog) Debugx(logID, format string, a ...any) error {
 	return p.debugx(logID, format, a...)
 }
 

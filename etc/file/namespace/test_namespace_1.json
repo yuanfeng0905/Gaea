@@ -1,9 +1,9 @@
 {
     "name": "test_namespace_1",
     "online": true,
-    "read_only": false,
+    "read_only": true,
     "allowed_dbs": {
-        "sbtest1": true
+        "chuangliang_ad": true
     },
     "slow_sql_time": "1000",
     "black_sql": [
@@ -13,8 +13,8 @@
     "slices": [
         {
             "name": "slice-0",
-            "user_name": "test1",
-            "password": "test1",
+            "user_name": "cl_readOnly",
+            "password": "Chuangliang@2023",
             "master": "127.0.0.1:3308",
             "slaves": null,
             "statistic_slaves": null,
@@ -27,11 +27,11 @@
     "shard_rules": null,
     "users": [
         {
-            "user_name": "front_user1",
-            "password": "front_password1",
+            "user_name": "admin",
+            "password": "123456",
             "namespace": "test_namespace_1",
             "rw_flag": 2,
-            "rw_split": 1,
+            "rw_split": 0,
             "other_property": 0
         }
     ],

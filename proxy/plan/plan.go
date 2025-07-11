@@ -631,7 +631,7 @@ func newEmptyResultset(info *SelectPlan, stmt *ast.SelectStmt) *mysql.Resultset 
 		}
 	}
 
-	r.Values = make([][]interface{}, 0)
+	r.Values = make([][]any, 0)
 	r.RowDatas = make([]mysql.RowData, 0)
 
 	return r

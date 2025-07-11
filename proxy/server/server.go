@@ -15,6 +15,7 @@
 package server
 
 import (
+	"errors"
 	"net"
 	"runtime"
 	"strconv"
@@ -130,7 +131,7 @@ func (s *Server) onConn(c net.Conn) {
 	}()
 
 	if _, err := cc.Handshake(); err != nil {
-		if err.Error() != mysql.ErrBadConn.Error() && err.Error() != mysql.ErrResetConn.Error() {
+		if !errors.Is(err, mysql.ErrBadConn) && !errors.Is(err, mysql.ErrResetConn) {
 			log.Warn("[server] onConn error: %s", err.Error())
 			cc.c.writeErrorPacket(err)
 		}

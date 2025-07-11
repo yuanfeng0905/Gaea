@@ -213,12 +213,12 @@ func (p *PatternInExprDecorator) Text() string {
 
 // SetText implement ast.Node
 func (p *PatternInExprDecorator) SetText(text string) {
-	return
+
 }
 
 // SetType implement ast.ExprNode
 func (p *PatternInExprDecorator) SetType(tp *types.FieldType) {
-	return
+
 }
 
 // GetType implement ast.ExprNode
@@ -228,7 +228,7 @@ func (p *PatternInExprDecorator) GetType() *types.FieldType {
 
 // SetFlag implement ast.ExprNode
 func (p *PatternInExprDecorator) SetFlag(flag uint64) {
-	return
+
 }
 
 // GetFlag implement ast.ExprNode

@@ -200,7 +200,7 @@ func (f *Field) Dump() []byte {
 }
 
 // FieldType return type of field
-func FieldType(value interface{}) (typ uint8, err error) {
+func FieldType(value any) (typ uint8, err error) {
 	switch value.(type) {
 	case int8, int16, int32, int64, int:
 		typ = TypeLonglong

@@ -33,10 +33,11 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/XiaoMi/Gaea/mysql"
-	"github.com/XiaoMi/Gaea/util"
 	"math"
 	"strconv"
+
+	"github.com/XiaoMi/Gaea/mysql"
+	"github.com/XiaoMi/Gaea/util"
 )
 
 var p = &mysql.Field{Name: []byte("?")}
@@ -94,7 +95,7 @@ func escapeSQL(sql string) string {
 type Stmt struct {
 	id          uint32
 	sql         string
-	args        []interface{}
+	args        []any
 	columnCount int
 	paramCount  int
 	paramTypes  []byte
@@ -104,7 +105,7 @@ type Stmt struct {
 
 // ResetParams reset args
 func (s *Stmt) ResetParams() {
-	s.args = make([]interface{}, s.paramCount)
+	s.args = make([]any, s.paramCount)
 }
 
 func (s *Stmt) SetParamTypes(paramTypes []byte) {
