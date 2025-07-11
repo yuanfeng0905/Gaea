@@ -18,6 +18,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -293,7 +294,7 @@ func (n *Namespace) verifyShardRules() error {
 
 	for _, s := range n.ShardRules {
 		for _, slice := range s.Slices {
-			if !includeSlice(sliceNames, slice) {
+			if !slices.Contains(sliceNames, slice) {
 				return fmt.Errorf("shard table[%s] slice[%s] not in the namespace.slices list:[%s]",
 					s.Table, slice, strings.Join(s.Slices, ","))
 			}

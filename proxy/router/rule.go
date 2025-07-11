@@ -587,15 +587,6 @@ func parseGlobalTableRuleSliceInfos(locations []int, slices []string, databases 
 	return subTableIndexs, tableToSlice, nil
 }
 
-func includeSlice(slices []string, sliceName string) bool {
-	for _, s := range slices {
-		if s == sliceName {
-			return true
-		}
-	}
-	return false
-}
-
 var rangeDatabaseRegex = regexp.MustCompile(`^(\S+?)\[(\d+)-(\d+)\]$`)
 
 // if a dbname is a database list, then parse the real dbnames and add to the result.

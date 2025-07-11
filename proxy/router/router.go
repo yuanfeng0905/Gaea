@@ -15,6 +15,7 @@ package router
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/XiaoMi/Gaea/models"
@@ -34,7 +35,7 @@ func NewRouter(namespace *models.Namespace) (*Router, error) {
 	}
 
 	// check default slice
-	if !includeSlice(sliceNames, namespace.DefaultSlice) {
+	if !slices.Contains(sliceNames, namespace.DefaultSlice) {
 		return nil, fmt.Errorf("default slice[%s] not in the slice list",
 			namespace.DefaultSlice)
 	}
@@ -48,7 +49,7 @@ func NewRouter(namespace *models.Namespace) (*Router, error) {
 
 	for i, shard := range namespace.ShardRules {
 		for _, slice := range shard.Slices {
-			if !includeSlice(sliceNames, slice) {
+			if !slices.Contains(sliceNames, slice) {
 				return nil, fmt.Errorf("shard table[%s] slice[%s] not in the namespace.slices list:[%s]",
 					shard.Table, slice, strings.Join(shard.Slices, ","))
 			}

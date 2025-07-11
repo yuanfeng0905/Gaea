@@ -260,15 +260,6 @@ func verifyGlobalTableRuleSliceInfos(locations []int, slices []string, databases
 	return nil
 }
 
-func includeSlice(slices []string, sliceName string) bool {
-	for _, s := range slices {
-		if s == sliceName {
-			return true
-		}
-	}
-	return false
-}
-
 func toIntArray(str string) ([]int, error) {
 	str = strings.Replace(str, " ", "", -1)
 	strList := strings.Split(str, ",")
