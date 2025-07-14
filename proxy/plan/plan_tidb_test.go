@@ -47,7 +47,7 @@ func BenchmarkSelectStmtCheckShard(b *testing.B) {
 				if !ok {
 					b.Fatal("not a select stmt")
 				}
-				visitor := NewChecker("test", r)
+				visitor := NewChecker("test", r, nil)
 				selectStmt.Accept(visitor)
 				if visitor.IsShard() != bm.isShard {
 					b.Errorf("isShard not equal, expect: %v, actual: %v", bm.isShard, visitor.IsShard())
@@ -80,7 +80,7 @@ func TestSelectStmtCheckShard(t *testing.T) {
 			if !ok {
 				t.Fatal("not a select stmt")
 			}
-			visitor := NewChecker("test", r)
+			visitor := NewChecker("test", r, nil)
 			selectStmt.Accept(visitor)
 			if visitor.IsShard() != test.isShard {
 				t.Errorf("isShard not equal, expect: %v, actual: %v", test.isShard, visitor.IsShard())

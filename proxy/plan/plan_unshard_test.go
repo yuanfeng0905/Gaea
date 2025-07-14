@@ -213,7 +213,7 @@ func TestCheckUnshardBase(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := CheckUnshardBase(tt.args.tokenId, tt.args.tokens, tt.args.rt, tt.args.db)
+			got, got1 := CheckUnshardBase(tt.args.tokenId, tt.args.tokens, tt.args.rt, nil, tt.args.db)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.want1, got1)
 		})
