@@ -77,7 +77,7 @@ func getTestFunc(info *PlanInfo, test SQLTestcase) func(t *testing.T) {
 			t.Fatalf("parse sql error: %v", err)
 		}
 
-		p, err := BuildPlan(stmt, info.phyDBs, test.db, test.sql, info.rt, info.seqs, nil)
+		p, err := BuildPlan(stmt, info.phyDBs, test.db, test.sql, info.rt, nil, info.seqs, nil)
 		if err != nil {
 			if test.hasErr {
 				t.Logf("BuildPlan got expect error, sql: %s, err: %v", test.sql, err)

@@ -23,6 +23,8 @@ import (
 	"github.com/XiaoMi/Gaea/parser"
 	"github.com/XiaoMi/Gaea/parser/ast"
 	"github.com/XiaoMi/Gaea/parser/format"
+	"github.com/XiaoMi/Gaea/parser/model"
+	"github.com/XiaoMi/Gaea/parser/opcode"
 	"github.com/XiaoMi/Gaea/proxy/router"
 	"github.com/XiaoMi/Gaea/proxy/sequence"
 	"github.com/XiaoMi/Gaea/util"
@@ -67,16 +69,20 @@ type Executor interface {
 type Checker struct {
 	db            string
 	router        *router.Router
+	grayRouter    *router.GrayRouter
 	hasShardTable bool // 是否包含分片表
+	hasGrayTable  bool // 是否包含灰度表
+	grayRule      *router.GrayRule
 	dbInvalid     bool // SQL是否No database selected
 	tableNames    []*ast.TableName
 }
 
 // NewChecker db为USE db中设置的DB名. 如果没有执行USE db, 则为空字符串
-func NewChecker(db string, router *router.Router) *Checker {
+func NewChecker(db string, router *router.Router, grayRouter *router.GrayRouter) *Checker {
 	return &Checker{
 		db:            db,
 		router:        router,
+		grayRouter:    grayRouter,
 		hasShardTable: false,
 		dbInvalid:     false,
 	}
@@ -97,6 +103,10 @@ func (s *Checker) IsShard() bool {
 	return s.hasShardTable
 }
 
+func (s *Checker) IsGray() bool {
+	return s.hasGrayTable
+}
+
 // Enter for node visit
 func (s *Checker) Enter(n ast.Node) (node ast.Node, skipChildren bool) {
 	if s.hasShardTable {
@@ -113,6 +123,11 @@ func (s *Checker) Enter(n ast.Node) (node ast.Node, skipChildren bool) {
 			s.hasShardTable = true
 			return n, true
 		}
+		if r, ok := s.hasGrayTableInTableName(nn); ok {
+			s.hasGrayTable = true
+			s.grayRule = r
+			return n, true
+		}
 		s.tableNames = append(s.tableNames, nn)
 	}
 	return n, false
@@ -126,6 +141,21 @@ func (s *Checker) Leave(n ast.Node) (node ast.Node, ok bool) {
 // 如果ast.TableName不带DB名, 且Session未设置DB, 则是不允许的SQL, 应该返回No database selected
 func (s *Checker) isTableNameDatabaseInvalid(n *ast.TableName) bool {
 	return s.db == "" && n.Schema.L == ""
+}
+
+func (s *Checker) hasGrayTableInTableName(n *ast.TableName) (*router.GrayRule, bool) {
+	if n.Schema.L == "" && s.db == "" {
+		return nil, false
+	}
+	db := n.Schema.L
+	if db == "" {
+		db = s.db
+	}
+	table := n.Name.L
+	if rule, ok := s.grayRouter.GetRule(db, table); ok {
+		return rule, true
+	}
+	return nil, false
 }
 
 func (s *Checker) hasShardTableInTableName(n *ast.TableName) bool {
@@ -173,7 +203,7 @@ type TableAliasStmtInfo struct {
 }
 
 // BuildPlan build plan for ast
-func BuildPlan(stmt ast.StmtNode, phyDBs map[string]string, db, sql string, router *router.Router, seq *sequence.SequenceManager, hintPlan Plan) (Plan, error) {
+func BuildPlan(stmt ast.StmtNode, phyDBs map[string]string, db, sql string, router *router.Router, grayRouter *router.GrayRouter, seq *sequence.SequenceManager, hintPlan Plan) (Plan, error) {
 	if IsSelectLastInsertIDStmt(stmt) {
 		return CreateSelectLastInsertIDPlan(stmt.(*ast.SelectStmt)), nil
 	}
@@ -186,7 +216,7 @@ func BuildPlan(stmt ast.StmtNode, phyDBs map[string]string, db, sql string, rout
 		return buildExplainPlan(estmt, phyDBs, db, sql, router, seq, hintPlan)
 	}
 
-	checker := NewChecker(db, router)
+	checker := NewChecker(db, router, grayRouter)
 	stmt.Accept(checker)
 
 	if checker.IsDatabaseInvalid() {
@@ -196,7 +226,81 @@ func BuildPlan(stmt ast.StmtNode, phyDBs map[string]string, db, sql string, rout
 	if checker.IsShard() {
 		return buildShardPlan(stmt, db, sql, router, seq, hintPlan)
 	}
-	return CreateUnshardPlan(stmt, phyDBs, db, checker.GetUnshardTableNames())
+
+	// TODO：只处理读
+	unshardTables := checker.GetUnshardTableNames()
+	if checker.IsGray() {
+		return buildGrayPlan(stmt, db, phyDBs, unshardTables, checker.grayRule)
+	}
+
+	return CreateUnshardPlan(stmt, phyDBs, db, unshardTables)
+}
+
+func generateGrayCompression(rule *router.GrayRule, whereExpr ast.ExprNode) (ast.ExprNode, error) {
+	if rule.Exclude {
+		if len(rule.GrayValues) == 1 {
+			return &ast.BinaryOperationExpr{
+				Op: opcode.NE,
+				L:  &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				R:  ast.NewValueExpr(rule.GrayValues[0]),
+			}, nil
+		} else if len(rule.GrayValues) > 1 {
+			lst := make([]ast.ExprNode, 0, len(rule.GrayValues))
+			for _, v := range rule.GrayValues {
+				lst = append(lst, ast.NewValueExpr(v))
+			}
+			expr := &ast.PatternInExpr{
+				Expr: &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				List: lst,
+				Not:  true, // 将算子改写为 NOT IN
+			}
+			return expr, nil
+		}
+	} else if rule.Include {
+		if len(rule.GrayValues) == 1 {
+			return &ast.BinaryOperationExpr{
+				Op: opcode.EQ,
+				L:  &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				R:  ast.NewValueExpr(rule.GrayValues[0]),
+			}, nil
+		} else if len(rule.GrayValues) > 1 {
+			// 处理多值, 将算子改写为 IN
+			lst := make([]ast.ExprNode, 0, len(rule.GrayValues))
+			for _, v := range rule.GrayValues {
+				lst = append(lst, ast.NewValueExpr(v))
+			}
+			expr := &ast.PatternInExpr{
+				Expr: &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				List: lst,
+			}
+
+			return expr, nil
+		}
+	}
+	return nil, fmt.Errorf("gray rule must be include or exclude")
+}
+
+func buildGrayPlan(stmt ast.StmtNode, db string, phyDBs map[string]string, unshardTables []*ast.TableName, rule *router.GrayRule) (Plan, error) {
+	switch s := stmt.(type) {
+	case *ast.SelectStmt:
+		expr, err := generateGrayCompression(rule, s.Where)
+		if err != nil {
+			return nil, fmt.Errorf("generate gray compression error: %v", err)
+		}
+
+		if s.Where == nil {
+			s.Where = expr
+		} else {
+			s.Where = &ast.BinaryOperationExpr{
+				L:  s.Where,
+				R:  expr,
+				Op: opcode.LogicAnd,
+			}
+		}
+		return CreateUnshardPlan(s, phyDBs, db, unshardTables)
+	default:
+		return CreateUnshardPlan(stmt, phyDBs, db, unshardTables)
+	}
 }
 
 func buildShardPlan(stmt ast.StmtNode, db string, sql string, router *router.Router, seq *sequence.SequenceManager, hintPlan Plan) (Plan, error) {

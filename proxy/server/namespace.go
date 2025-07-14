@@ -68,6 +68,7 @@ type Namespace struct {
 	slowSQLTime            int64             // session slow sql time, millisecond, default 1000
 	allowips               []util.IPInfo
 	router                 *router.Router
+	grayRouter             *router.GrayRouter
 	sequences              *sequence.SequenceManager
 	slices                 map[string]*backend.Slice // key: slice name
 	userProperties         map[string]*UserProperty  // key: user name ,value: user's properties
@@ -241,6 +242,8 @@ func NewNamespace(namespaceConfig *models.Namespace, proxyDatacenter string) (*N
 		return nil, fmt.Errorf("init router of namespace: %s failed, err: %v", namespace.name, err)
 	}
 
+	namespace.grayRouter = router.NewGrayRouter(namespaceConfig)
+
 	// init global sequences config
 	// 目前只支持基于mysql的序列号
 	sequences := sequence.NewSequenceManager()
@@ -286,6 +289,10 @@ func (n *Namespace) GetAllowedSessionVariables() map[string]string {
 // GetRouter return router of namespace
 func (n *Namespace) GetRouter() *router.Router {
 	return n.router
+}
+
+func (n *Namespace) GetGrayRouter() *router.GrayRouter {
+	return n.grayRouter
 }
 
 func (n *Namespace) GetSequences() *sequence.SequenceManager {

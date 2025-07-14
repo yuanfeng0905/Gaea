@@ -110,6 +110,10 @@ func (n *Namespace) Verify() error {
 		return err
 	}
 
+	if err := n.verifyGrayRules(); err != nil {
+		return err
+	}
+
 	n.verifyCapability()
 	n.verifyDefaultSessionVariables()
 
@@ -281,6 +285,16 @@ func (n *Namespace) verifyDefaultSlice() error {
 			return fmt.Errorf("invalid default slice: %s", n.DefaultSlice)
 		}
 	}
+	return nil
+}
+
+func (n *Namespace) verifyGrayRules() error {
+	for _, rule := range n.GrayRules {
+		if err := rule.verify(); err != nil {
+			return fmt.Errorf("gray rule config error, namespace: %s, %v", n.Name, err)
+		}
+	}
+
 	return nil
 }
 

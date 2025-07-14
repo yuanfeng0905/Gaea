@@ -5,7 +5,7 @@
     "allowed_dbs": {
         "chuangliang_ad": true
     },
-    "slow_sql_time": "1000",
+    "slow_sql_time": "100",
     "black_sql": [
         ""
     ],
@@ -25,12 +25,22 @@
         }
     ],
     "shard_rules": null,
+    "gray_rules": [
+        {
+            "include": false,
+            "exclude": true,
+            "db": "chuangliang_ad",
+            "table": "media_account",
+            "column": "main_user_id",
+            "white_list": ["11520","11530"]
+        }
+    ],
     "users": [
         {
             "user_name": "admin",
             "password": "123456",
             "namespace": "test_namespace_1",
-            "rw_flag": 2,
+            "rw_flag": 1,
             "rw_split": 0,
             "other_property": 0
         }

@@ -286,7 +286,7 @@ func (se *SessionExecutor) getPlan(reqCtx *util.RequestContext, ns *Namespace, d
 		}
 	}
 
-	p, err = plan.BuildPlan(n, ns.GetPhysicalDBs(), db, sql, ns.GetRouter(), ns.GetSequences(), hintPlan)
+	p, err = plan.BuildPlan(n, ns.GetPhysicalDBs(), db, sql, ns.GetRouter(), ns.GetGrayRouter(), ns.GetSequences(), hintPlan)
 	if err != nil {
 		return nil, fmt.Errorf("build plan error: %v", err)
 	}
@@ -297,6 +297,7 @@ func (se *SessionExecutor) getPlan(reqCtx *util.RequestContext, ns *Namespace, d
 // preBuildUnshardPlan pre-build unshard plan by shard rules or tokens
 func (se *SessionExecutor) preBuildUnshardPlan(reqCtx *util.RequestContext, db string, sql string) (plan.Plan, bool) {
 	rt := se.GetNamespace().GetRouter()
+	grt := se.GetNamespace().GetGrayRouter()
 	phyDBs := se.GetNamespace().GetPhysicalDBs()
 
 	tokens := parser.Tokenize(sql)
@@ -323,7 +324,7 @@ func (se *SessionExecutor) preBuildUnshardPlan(reqCtx *util.RequestContext, db s
 
 	// preCheck unshard sql
 	// 1. no shard rules return unshard plan directly
-	if len(rt.GetAllRules()) == 0 {
+	if len(rt.GetAllRules()) == 0 && len(grt.GetAllRules()) == 0 {
 		p, err := plan.PreCreateUnshardPlan(sql, phyDBs, db)
 		if err == nil {
 			return p, true
@@ -343,7 +344,7 @@ func (se *SessionExecutor) preBuildUnshardPlan(reqCtx *util.RequestContext, db s
 	// TODO: deal with more sql type and optimize
 	switch tokenId {
 	case mysql.TkIdSelect, mysql.TkIdDelete:
-		ruleDB, isUnshardPlan = plan.CheckUnshardBase(tokenId, tokens, rt, db)
+		ruleDB, isUnshardPlan = plan.CheckUnshardBase(tokenId, tokens, rt, grt, db)
 	case mysql.TkIdReplace, mysql.TkIdInsert:
 		ruleDB, isUnshardPlan = plan.CheckUnshardInsert(tokens, rt, db)
 	case mysql.TkIdUpdate:

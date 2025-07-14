@@ -53,6 +53,7 @@ const (
 	MycatStringRuleType     = models.ShardMycatString
 	MycatMurmurRuleType     = models.ShardMycatMURMUR
 	MycatPaddingModRuleType = models.ShardMycatPaddingMod
+	GrayRuleType            = models.ShardGray
 
 	MinMonthDaysCount = 28
 	MaxMonthDaysCount = 31
@@ -104,6 +105,57 @@ type LinkedRule struct {
 	shardingColumn string
 
 	linkToRule *BaseRule
+}
+
+type GrayRule struct {
+	Include    bool
+	Exclude    bool
+	GrayColumn string // 灰度列
+	GrayValues []any
+}
+
+type GrayRouter struct {
+	rules map[string]map[string]*GrayRule // key: db name, value: map[table name]Rule
+}
+
+func (r *GrayRouter) GetAllRules() map[string]map[string]*GrayRule {
+	return r.rules
+}
+
+func (r *GrayRouter) GetRule(db, table string) (*GrayRule, bool) {
+	arry := strings.Split(table, ".")
+	if len(arry) == 2 {
+		table = strings.Trim(arry[1], "`")
+		db = strings.Trim(arry[0], "`")
+	}
+	rule, ok := r.rules[db][table]
+	return rule, ok
+}
+
+func NewGrayRouter(cfg *models.Namespace) *GrayRouter {
+	rules := make(map[string]map[string]*GrayRule)
+	for _, i := range cfg.GrayRules {
+		// create gray rule
+		grayRule := &GrayRule{
+			Include:    i.Include,
+			Exclude:    i.Exclude,
+			GrayColumn: i.Column,
+			GrayValues: i.WhiteList,
+		}
+		if _, ok := rules[i.DB]; ok {
+			if _, ok := rules[i.DB][i.Table]; ok {
+				panic(fmt.Sprintf("gray rule for table %s in db %s already exists", i.Table, i.DB))
+			} else {
+				rules[i.DB][i.Table] = grayRule
+			}
+		} else {
+			rules[i.DB] = make(map[string]*GrayRule)
+			rules[i.DB][i.Table] = grayRule
+		}
+	}
+	return &GrayRouter{
+		rules: rules,
+	}
 }
 
 func NewDefaultRule(slice string) *BaseRule {

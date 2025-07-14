@@ -15,6 +15,9 @@
 package plan
 
 import (
+	"reflect"
+	"testing"
+
 	"github.com/XiaoMi/Gaea/models"
 	"github.com/XiaoMi/Gaea/mysql"
 	"github.com/XiaoMi/Gaea/parser"
@@ -22,8 +25,6 @@ import (
 	"github.com/XiaoMi/Gaea/proxy/router"
 	"github.com/XiaoMi/Gaea/util"
 	"github.com/stretchr/testify/assert"
-	"reflect"
-	"testing"
 
 	"github.com/XiaoMi/Gaea/backend"
 )
@@ -140,7 +141,7 @@ func TestBuildPlan(t *testing.T) {
 		t.Run(test.sql, func(t *testing.T) {
 			stmt, err := parser.ParseSQL(test.sql)
 			assert.Equal(t, err, nil)
-			p, err := BuildPlan(stmt, map[string]string{}, "test", test.sql, nil, nil, nil)
+			p, err := BuildPlan(stmt, map[string]string{}, "test", test.sql, nil, nil, nil, nil)
 			assert.Equal(t, reflect.TypeOf(test.expectPlan), reflect.TypeOf(p))
 			assert.Equal(t, err, nil)
 			_, err = p.ExecuteIn(util.NewRequestContext(), &mockExecutor{})

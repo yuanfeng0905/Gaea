@@ -16,9 +16,10 @@ package models
 
 import (
 	"fmt"
-	"github.com/XiaoMi/Gaea/core/errors"
 	"regexp"
 	"strconv"
+
+	"github.com/XiaoMi/Gaea/core/errors"
 )
 
 // constants of shard type
@@ -37,6 +38,7 @@ const (
 	ShardMycatString     = "mycat_string"
 	ShardMycatMURMUR     = "mycat_murmur"
 	ShardMycatPaddingMod = "mycat_padding_mod"
+	ShardGray            = "gray"
 
 	// PartitionLength length of partition
 	PartitionLength = 1024

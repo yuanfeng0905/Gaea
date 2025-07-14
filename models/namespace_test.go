@@ -60,7 +60,7 @@ func TestNamespaceEncode(t *testing.T) {
 	user1 := &User{UserName: "test1", Password: "test1", Namespace: "gaea_namespace_1", RWFlag: 2, RWSplit: 1}
 	namespace.Users = append(namespace.Users, user1)
 
-	t.Logf(string(namespace.Encode()))
+	t.Logf("%s", namespace.Encode())
 }
 
 func TestEncrypt(t *testing.T) {
@@ -82,7 +82,7 @@ func TestEncrypt(t *testing.T) {
 	if err != nil {
 		t.Errorf("test namespace failed, %v", err)
 	}
-	t.Logf(string(namespace.Encode()))
+	t.Logf("%s", namespace.Encode())
 }
 
 func TestVerifyName_Success(t *testing.T) {
@@ -222,7 +222,7 @@ func TestVerifyCharset_Success(t *testing.T) {
 
 func TestVerifyCharset_Error(t *testing.T) {
 	nf := defaultNamespace()
-	var ccfs = [][]string{[]string{"", "test"}, []string{"test", ""}, []string{"big5", "test"}, []string{"big5", "latin2_czech_cs"}}
+	var ccfs = [][]string{{"", "test"}, {"test", ""}, {"big5", "test"}, {"big5", "latin2_czech_cs"}}
 	for _, ccf := range ccfs {
 		nf.DefaultCharset = ccf[0]
 		nf.DefaultCollation = ccf[1]
@@ -247,13 +247,13 @@ func TestVerifySlices_Error(t *testing.T) {
 	nf := defaultNamespace()
 	var slice1 = &Slice{Name: "slice1", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100}
 	var slicefs = []*Slice{
-		&Slice{Name: "", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
-		&Slice{Name: "slice1", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
-		&Slice{Name: "slice1", UserName: "", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
-		&Slice{Name: "slice1", UserName: "user", Password: "", Master: "", Slaves: []string{}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
-		&Slice{Name: "slice1", UserName: "user", Password: "", Master: "", Slaves: []string{""}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
-		&Slice{Name: "slice1", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 0, MaxCapacity: 1, IdleTimeout: 100},
-		&Slice{Name: "slice1", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 0, IdleTimeout: 100},
+		{Name: "", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
+		{Name: "slice1", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
+		{Name: "slice1", UserName: "", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
+		{Name: "slice1", UserName: "user", Password: "", Master: "", Slaves: []string{}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
+		{Name: "slice1", UserName: "user", Password: "", Master: "", Slaves: []string{""}, Capacity: 1, MaxCapacity: 1, IdleTimeout: 100},
+		{Name: "slice1", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 0, MaxCapacity: 1, IdleTimeout: 100},
+		{Name: "slice1", UserName: "user", Password: "", Master: "1.1.1.1:1", Slaves: []string{"1.1.1.1:2"}, Capacity: 1, MaxCapacity: 0, IdleTimeout: 100},
 	}
 	for _, slicef := range slicefs {
 		nf.Slices = append(nf.Slices, slice1)
@@ -288,27 +288,27 @@ func TestVerifyDefaultSlice_Error(t *testing.T) {
 func TestVerifyShardRules_Success(t *testing.T) {
 	n := defaultNamespace()
 	n.Slices = []*Slice{
-		&Slice{Name: "slice-0", UserName: "root", Password: "root", Master: "127.0.0.1:3306", Capacity: 64, MaxCapacity: 128, IdleTimeout: 3600},
-		&Slice{Name: "slice-1", UserName: "root", Password: "root", Master: "127.0.0.1:3307", Capacity: 64, MaxCapacity: 128, IdleTimeout: 3600},
+		{Name: "slice-0", UserName: "root", Password: "root", Master: "127.0.0.1:3306", Capacity: 64, MaxCapacity: 128, IdleTimeout: 3600},
+		{Name: "slice-1", UserName: "root", Password: "root", Master: "127.0.0.1:3307", Capacity: 64, MaxCapacity: 128, IdleTimeout: 3600},
 	}
 	n.ShardRules = []*Shard{
-		&Shard{DB: "db_ks", Table: "tbl_ks", Type: "mod", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}},
-		&Shard{DB: "db_ks", Table: "tbl_ks_child", Type: "linked", Key: "id", ParentTable: "tbl_ks"},
-		&Shard{DB: "db_ks", Table: "tbl_ks_user_child", Type: "linked", Key: "user_id", ParentTable: "tbl_ks"},
-		&Shard{DB: "db_ks", Table: "tbl_ks_global_one", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}},
-		&Shard{DB: "db_ks", Table: "tbl_ks_global_two", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}},
-		&Shard{DB: "db_ks", Table: "tbl_ks_range", Type: "range", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, TableRowLimit: 100},
-		&Shard{DB: "db_ks", Table: "tbl_ks_year", Type: "date_year", Key: "create_time", Slices: []string{"slice-0", "slice-1"}, DateRange: []string{"2014-2017", "2018-2019"}},
-		&Shard{DB: "db_ks", Table: "tbl_ks_month", Type: "date_month", Key: "create_time", Slices: []string{"slice-0", "slice-1"}, DateRange: []string{"201405-201406", "201408-201409"}},
-		&Shard{DB: "db_ks", Table: "tbl_ks_day", Type: "date_day", Key: "create_time", Slices: []string{"slice-0", "slice-1"}, DateRange: []string{"20140901-20140905", "20140907-20140908"}},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat", Type: "mycat_mod", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat_child", Type: "linked", ParentTable: "tbl_mycat", Key: "id"},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat_user_child", Type: "linked", ParentTable: "tbl_mycat", Key: "user_id"},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat_murmur", Type: "mycat_murmur", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_0", "db_mycat_1", "db_mycat_2", "db_mycat_3"}, Seed: "0", VirtualBucketTimes: "160"},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat_long", Type: "mycat_long", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}, PartitionCount: "4", PartitionLength: "256"},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat_global_one", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat_global_two", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}},
-		&Shard{DB: "db_mycat", Table: "tbl_mycat_string", Type: "mycat_string", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}, PartitionCount: "4", PartitionLength: "256", HashSlice: "20"},
+		{DB: "db_ks", Table: "tbl_ks", Type: "mod", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}},
+		{DB: "db_ks", Table: "tbl_ks_child", Type: "linked", Key: "id", ParentTable: "tbl_ks"},
+		{DB: "db_ks", Table: "tbl_ks_user_child", Type: "linked", Key: "user_id", ParentTable: "tbl_ks"},
+		{DB: "db_ks", Table: "tbl_ks_global_one", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}},
+		{DB: "db_ks", Table: "tbl_ks_global_two", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}},
+		{DB: "db_ks", Table: "tbl_ks_range", Type: "range", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, TableRowLimit: 100},
+		{DB: "db_ks", Table: "tbl_ks_year", Type: "date_year", Key: "create_time", Slices: []string{"slice-0", "slice-1"}, DateRange: []string{"2014-2017", "2018-2019"}},
+		{DB: "db_ks", Table: "tbl_ks_month", Type: "date_month", Key: "create_time", Slices: []string{"slice-0", "slice-1"}, DateRange: []string{"201405-201406", "201408-201409"}},
+		{DB: "db_ks", Table: "tbl_ks_day", Type: "date_day", Key: "create_time", Slices: []string{"slice-0", "slice-1"}, DateRange: []string{"20140901-20140905", "20140907-20140908"}},
+		{DB: "db_mycat", Table: "tbl_mycat", Type: "mycat_mod", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}},
+		{DB: "db_mycat", Table: "tbl_mycat_child", Type: "linked", ParentTable: "tbl_mycat", Key: "id"},
+		{DB: "db_mycat", Table: "tbl_mycat_user_child", Type: "linked", ParentTable: "tbl_mycat", Key: "user_id"},
+		{DB: "db_mycat", Table: "tbl_mycat_murmur", Type: "mycat_murmur", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_0", "db_mycat_1", "db_mycat_2", "db_mycat_3"}, Seed: "0", VirtualBucketTimes: "160"},
+		{DB: "db_mycat", Table: "tbl_mycat_long", Type: "mycat_long", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}, PartitionCount: "4", PartitionLength: "256"},
+		{DB: "db_mycat", Table: "tbl_mycat_global_one", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}},
+		{DB: "db_mycat", Table: "tbl_mycat_global_two", Type: "global", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}},
+		{DB: "db_mycat", Table: "tbl_mycat_string", Type: "mycat_string", Key: "id", Locations: []int{2, 2}, Slices: []string{"slice-0", "slice-1"}, Databases: []string{"db_mycat_[0-3]"}, PartitionCount: "4", PartitionLength: "256", HashSlice: "20"},
 	}
 	if err := n.verifyShardRules(); err != nil {
 		t.Errorf("test verifyShardRules failed, %v", err)
@@ -318,15 +318,15 @@ func TestVerifyShardRules_Success(t *testing.T) {
 func TestVerifyShardRule_Error_common(t *testing.T) {
 	nf := defaultNamespace()
 	// slices not match
-	nf.ShardRules = []*Shard{&Shard{Slices: []string{"slice"}}}
+	nf.ShardRules = []*Shard{{Slices: []string{"slice"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 
 	// db duplicate
 	nf.ShardRules = []*Shard{
-		&Shard{DB: "db", Table: "table", Type: ShardMod},
-		&Shard{DB: "db", Table: "table", Type: ShardMod},
+		{DB: "db", Table: "table", Type: ShardMod},
+		{DB: "db", Table: "table", Type: ShardMod},
 	}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, shardRule: %s", JSONEncode(nf.ShardRules))
@@ -335,7 +335,7 @@ func TestVerifyShardRule_Error_common(t *testing.T) {
 
 func TestVerifyShardRules_Error_ShardDefault(t *testing.T) {
 	nf := defaultNamespace()
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDefault}}
+	nf.ShardRules = []*Shard{{Type: ShardDefault}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, shardRule: %s", JSONEncode(nf.ShardRules))
 	}
@@ -345,7 +345,7 @@ func TestVerifyShardRules_Error_ShardLinked(t *testing.T) {
 	nf := defaultNamespace()
 	// without parent rules
 	nf.ShardRules = []*Shard{
-		&Shard{Type: ShardLinked, DB: "db1", Table: "table1", ParentTable: "table2"},
+		{Type: ShardLinked, DB: "db1", Table: "table1", ParentTable: "table2"},
 	}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, shardRule: %s", JSONEncode(nf.ShardRules))
@@ -353,8 +353,8 @@ func TestVerifyShardRules_Error_ShardLinked(t *testing.T) {
 
 	// link to another linkedRule
 	nf.ShardRules = []*Shard{
-		&Shard{Type: ShardLinked, DB: "db1", Table: "table1", ParentTable: "table2"},
-		&Shard{Type: ShardLinked, DB: "db1", Table: "table2", ParentTable: "table2"},
+		{Type: ShardLinked, DB: "db1", Table: "table1", ParentTable: "table2"},
+		{Type: ShardLinked, DB: "db1", Table: "table2", ParentTable: "table2"},
 	}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, shardRule: %s", JSONEncode(nf.ShardRules))
@@ -364,7 +364,7 @@ func TestVerifyShardRules_Error_ShardLinked(t *testing.T) {
 func TestVerifyShardRules_Error_ShardHash(t *testing.T) {
 	nf := defaultNamespace()
 	// locations count is not equal
-	nf.ShardRules = []*Shard{&Shard{Type: ShardHash, Locations: []int{1}, Slices: []string{}}}
+	nf.ShardRules = []*Shard{{Type: ShardHash, Locations: []int{1}, Slices: []string{}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, shardRule: %s", JSONEncode(nf.ShardRules))
 	}
@@ -373,7 +373,7 @@ func TestVerifyShardRules_Error_ShardHash(t *testing.T) {
 func TestVerifyShardRules_Error_ShardMod(t *testing.T) {
 	nf := defaultNamespace()
 	// locations count is not equal
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMod, Locations: []int{1}, Slices: []string{}}}
+	nf.ShardRules = []*Shard{{Type: ShardMod, Locations: []int{1}, Slices: []string{}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, shardRule: %s", JSONEncode(nf.ShardRules))
 	}
@@ -382,7 +382,7 @@ func TestVerifyShardRules_Error_ShardMod(t *testing.T) {
 func TestVerifyShardRules_Error_ShardRange(t *testing.T) {
 	nf := defaultNamespace()
 	// locations count is not equal
-	nf.ShardRules = []*Shard{&Shard{Type: ShardRange, Locations: []int{1}, Slices: []string{}}}
+	nf.ShardRules = []*Shard{{Type: ShardRange, Locations: []int{1}, Slices: []string{}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, shardRule: %s", JSONEncode(nf.ShardRules))
 	}
@@ -392,38 +392,38 @@ func TestVerifyShardRules_Error_ShardDay(t *testing.T) {
 	nf := defaultNamespace()
 	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
 	// dateRange count is not equal
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"1"}, Slices: []string{}}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"1"}, Slices: []string{}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// dateRange not match
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"1"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"1"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"abc"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"abc"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"22222222"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"22222222"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"201910301-2019103"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"201910301-2019103"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"22222222-33333333"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"22222222-33333333"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"11111111-22222222"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"11111111-22222222"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// date range overlapped
-	nf.Slices = []*Slice{&Slice{Name: "slice1"}, &Slice{Name: "slice2"}}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardDay, DateRange: []string{"20181030", "20181001"}, Slices: []string{"slice1", "slice2"}}}
+	nf.Slices = []*Slice{{Name: "slice1"}, {Name: "slice2"}}
+	nf.ShardRules = []*Shard{{Type: ShardDay, DateRange: []string{"20181030", "20181001"}, Slices: []string{"slice1", "slice2"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -431,40 +431,40 @@ func TestVerifyShardRules_Error_ShardDay(t *testing.T) {
 
 func TestVerifyShardRules_Error_ShardMonth(t *testing.T) {
 	nf := defaultNamespace()
-	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
+	nf.Slices = []*Slice{{Name: "slice1"}}
 	// dateRange count is not equal
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"1"}, Slices: []string{}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"1"}, Slices: []string{}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// dateRange not match
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"1"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"1"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"abc"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"abc"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"222222"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"222222"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"2019101-20191"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"2019101-20191"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"222222-333333"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"222222-333333"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"111111-222222"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"111111-222222"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// date range overlapped
 	nf.Slices = []*Slice{&Slice{Name: "slice1"}, &Slice{Name: "slice2"}}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMonth, DateRange: []string{"201810", "201809"}, Slices: []string{"slice1", "slice2"}}}
+	nf.ShardRules = []*Shard{{Type: ShardMonth, DateRange: []string{"201810", "201809"}, Slices: []string{"slice1", "slice2"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -472,28 +472,28 @@ func TestVerifyShardRules_Error_ShardMonth(t *testing.T) {
 
 func TestVerifyShardRules_Error_ShardYear(t *testing.T) {
 	nf := defaultNamespace()
-	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
+	nf.Slices = []*Slice{{Name: "slice1"}}
 	// dateRange count is not equal
-	nf.ShardRules = []*Shard{&Shard{Type: ShardYear, DateRange: []string{"1"}, Slices: []string{}}}
+	nf.ShardRules = []*Shard{{Type: ShardYear, DateRange: []string{"1"}, Slices: []string{}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// dateRange not match
-	nf.ShardRules = []*Shard{&Shard{Type: ShardYear, DateRange: []string{"1"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardYear, DateRange: []string{"1"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardYear, DateRange: []string{"abc"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardYear, DateRange: []string{"abc"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardYear, DateRange: []string{"20191-201"}, Slices: []string{"slice1"}}}
+	nf.ShardRules = []*Shard{{Type: ShardYear, DateRange: []string{"20191-201"}, Slices: []string{"slice1"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// date range overlapped
-	nf.Slices = []*Slice{&Slice{Name: "slice1"}, &Slice{Name: "slice2"}}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardYear, DateRange: []string{"2018", "2017"}, Slices: []string{"slice1", "slice2"}}}
+	nf.Slices = []*Slice{{Name: "slice1"}, {Name: "slice2"}}
+	nf.ShardRules = []*Shard{{Type: ShardYear, DateRange: []string{"2018", "2017"}, Slices: []string{"slice1", "slice2"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -507,19 +507,19 @@ func TestVerifyShardRules_Error_ShardMycatMod(t *testing.T) {
 
 func testVerifyShardRules_Error_ShardMycatMod(t string) error {
 	nf := defaultNamespace()
-	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
+	nf.Slices = []*Slice{{Name: "slice1"}}
 	// location count is not equal of slice
-	nf.ShardRules = []*Shard{&Shard{Type: t, Locations: []int{1}, Slices: []string{}, Databases: []string{""}}}
+	nf.ShardRules = []*Shard{{Type: t, Locations: []int{1}, Slices: []string{}, Databases: []string{""}}}
 	if err := nf.verifyShardRules(); err == nil {
 		return fmt.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// db bound value invalid
-	nf.ShardRules = []*Shard{&Shard{Type: t, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[1-1]"}}}
+	nf.ShardRules = []*Shard{{Type: t, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[1-1]"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		return fmt.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// location count is not equal of db
-	nf.ShardRules = []*Shard{&Shard{Type: t, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}}}
+	nf.ShardRules = []*Shard{{Type: t, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		return fmt.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -540,17 +540,17 @@ func testVerifyShardRules_Error_ShardMycatLong(t string) error {
 	nf := defaultNamespace()
 	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
 	// patitionCount to int array
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatLong, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "test", PartitionLength: ""}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatLong, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "test", PartitionLength: ""}}
 	if err := nf.verifyShardRules(); err == nil {
 		return fmt.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// patitionLength to int array
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatLong, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "4", PartitionLength: "test"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatLong, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "4", PartitionLength: "test"}}
 	if err := nf.verifyShardRules(); err == nil {
 		return fmt.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// partitionScope not match
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatLong, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "256"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatLong, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "256"}}
 	if err := nf.verifyShardRules(); err == nil {
 		return fmt.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -567,21 +567,21 @@ func TestVerifyShardRules_Error_ShardMycatString(t *testing.T) {
 	}
 
 	nf := defaultNamespace()
-	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
+	nf.Slices = []*Slice{{Name: "slice1"}}
 	// verify hashSlice
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: "test"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: "test"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: "test:"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: "test:"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: ":test"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: ":test"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: "a:b:c"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatString, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PartitionCount: "2", PartitionLength: "512", HashSlice: "a:b:c"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -595,11 +595,11 @@ func TestVerifyShardRules_Error_ShardMycatMURMUR(t *testing.T) {
 	nf := defaultNamespace()
 	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
 	// verify seed and virtualBucketTimes
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatMURMUR, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, Seed: "test", VirtualBucketTimes: ""}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatMURMUR, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, Seed: "test", VirtualBucketTimes: ""}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatMURMUR, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, Seed: "5", VirtualBucketTimes: "test"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatMURMUR, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, Seed: "5", VirtualBucketTimes: "test"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -612,47 +612,47 @@ func TestVerifyShardRules_Error_ShardMycatPaddingMod(t *testing.T) {
 
 	nf := defaultNamespace()
 	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "test", PadLength: "", ModBegin: "", ModEnd: ""}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "test", PadLength: "", ModBegin: "", ModEnd: ""}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "test", ModBegin: "", ModEnd: ""}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "test", ModBegin: "", ModEnd: ""}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "test", ModEnd: ""}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "test", ModEnd: ""}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "1", ModEnd: "test"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "1", ModEnd: "test"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "2", PadLength: "1", ModBegin: "1", ModEnd: "1"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "2", PadLength: "1", ModBegin: "1", ModEnd: "1"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db0"}, PadFrom: "1", PadLength: "1", ModBegin: "1", ModEnd: "1"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db0"}, PadFrom: "1", PadLength: "1", ModBegin: "1", ModEnd: "1"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "-1", ModEnd: "4"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "-1", ModEnd: "4"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "4", ModEnd: "4"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "1", ModBegin: "4", ModEnd: "4"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "0", ModBegin: "0", ModEnd: "4"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "0", ModBegin: "0", ModEnd: "4"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "-1", ModBegin: "0", ModEnd: "4"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "-1", ModBegin: "0", ModEnd: "4"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
-	nf.ShardRules = []*Shard{&Shard{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "2", ModBegin: "0", ModEnd: "4"}}
+	nf.ShardRules = []*Shard{{Type: ShardMycatPaddingMod, Locations: []int{2}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}, PadFrom: "1", PadLength: "2", ModBegin: "0", ModEnd: "4"}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
@@ -660,19 +660,19 @@ func TestVerifyShardRules_Error_ShardMycatPaddingMod(t *testing.T) {
 
 func TestVerifyShardRules_Error_ShardGlobal(t *testing.T) {
 	nf := defaultNamespace()
-	nf.Slices = []*Slice{&Slice{Name: "slice1"}}
+	nf.Slices = []*Slice{{Name: "slice1"}}
 	// location count is not equal of slice
-	nf.ShardRules = []*Shard{&Shard{Type: ShardGlobal, Locations: []int{1}, Slices: []string{}, Databases: []string{""}}}
+	nf.ShardRules = []*Shard{{Type: ShardGlobal, Locations: []int{1}, Slices: []string{}, Databases: []string{""}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// db bound value invalid
-	nf.ShardRules = []*Shard{&Shard{Type: ShardGlobal, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[1-1]"}}}
+	nf.ShardRules = []*Shard{{Type: ShardGlobal, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[1-1]"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}
 	// location count is not equal of db
-	nf.ShardRules = []*Shard{&Shard{Type: ShardGlobal, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}}}
+	nf.ShardRules = []*Shard{{Type: ShardGlobal, Locations: []int{1}, Slices: []string{"slice1"}, Databases: []string{"db[0-1]"}}}
 	if err := nf.verifyShardRules(); err == nil {
 		t.Errorf("test verifyShardRules should fail but pass, slices: %s, shardRule: %s", JSONEncode(nf.Slices), JSONEncode(nf.ShardRules))
 	}

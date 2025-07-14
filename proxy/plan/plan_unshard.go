@@ -16,6 +16,7 @@ package plan
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/XiaoMi/Gaea/parser"
@@ -102,6 +103,7 @@ func CreateUnshardPlan(stmt ast.StmtNode, phyDBs map[string]string, db string, t
 	if err != nil {
 		return nil, fmt.Errorf("generate unshardPlan SQL error: %v", err)
 	}
+	slog.Info(fmt.Sprintf("CreateUnshardPlan db: %s, sql: %s", db, rsql))
 	p.sql = rsql
 	return p, nil
 }
@@ -222,7 +224,7 @@ func createLastInsertIDResult(lastInsertID uint64, asName string) *mysql.Result 
 	return ret
 }
 
-func CheckUnshardBase(tokenId int, tokens []string, rt *router.Router, db string) (string, bool) {
+func CheckUnshardBase(tokenId int, tokens []string, rt *router.Router, grt *router.GrayRouter, db string) (string, bool) {
 	ruleDB := db
 	tokensLen := len(tokens)
 	for i := 0; i < tokensLen; i++ {
@@ -241,6 +243,10 @@ func CheckUnshardBase(tokenId int, tokens []string, rt *router.Router, db string
 		}
 		// if table in shard rule, is shard plan
 		if rt.GetRule(ruleDB, tableName) != rt.GetDefaultRule() {
+			return ruleDB, false
+		}
+
+		if _, ok := grt.GetRule(ruleDB, tableName); ok {
 			return ruleDB, false
 		}
 	}

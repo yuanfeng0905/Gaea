@@ -43,7 +43,7 @@ func buildExplainPlan(stmt *ast.ExplainStmt, phyDBs map[string]string, db, sql s
 		return nil, fmt.Errorf("nested explain")
 	}
 
-	p, err := BuildPlan(stmtToExplain, phyDBs, db, sql, r, seq, hintPlan)
+	p, err := BuildPlan(stmtToExplain, phyDBs, db, sql, r, nil, seq, hintPlan)
 	if err != nil {
 		return nil, fmt.Errorf("build plan to explain error: %v", err)
 	}

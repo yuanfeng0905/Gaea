@@ -162,7 +162,6 @@ func (s *SelectPlan) noAddColumns() bool {
 // 处理SelectStmt语法树, 改写其中一些节点, 并获取路由信息和结果聚合函数
 func HandleSelectStmt(p *SelectPlan, stmt *ast.SelectStmt) error {
 	p.stmt = stmt // hold the reference of stmt
-
 	p.distinct = stmt.Distinct
 
 	if err := handleTableRefs(p, stmt); err != nil {
