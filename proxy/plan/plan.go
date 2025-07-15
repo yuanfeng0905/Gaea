@@ -236,7 +236,7 @@ func BuildPlan(stmt ast.StmtNode, phyDBs map[string]string, db, sql string, rout
 	return CreateUnshardPlan(stmt, phyDBs, db, unshardTables)
 }
 
-func generateGrayCompression(rule *router.GrayRule, alias map[string]string) (ast.ExprNode, error) {
+func generateGrayExpression(rule *router.GrayRule, alias map[string]string) (ast.ExprNode, error) {
 	var lr *ast.ColumnNameExpr
 	if t, ok := alias[rule.Table]; ok {
 		lr = &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn), Table: model.NewCIStr(t)}}
@@ -329,7 +329,7 @@ func buildGrayPlan(stmt ast.StmtNode, db string, phyDBs map[string]string, unsha
 	stmt.Accept(tav)
 	switch s := stmt.(type) {
 	case *ast.SelectStmt:
-		expr, err := generateGrayCompression(rule, tav.GetTableAlias())
+		expr, err := generateGrayExpression(rule, tav.GetTableAlias())
 		if err != nil {
 			return nil, fmt.Errorf("generate gray compression error: %v", err)
 		}
