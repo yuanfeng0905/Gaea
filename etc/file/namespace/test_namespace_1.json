@@ -3,7 +3,8 @@
     "online": true,
     "read_only": true,
     "allowed_dbs": {
-        "chuangliang_ad": true
+        "chuangliang_ad": true,
+        "information_schema": true
     },
     "slow_sql_time": "100",
     "black_sql": [
@@ -26,7 +27,7 @@
     ],
     "shard_rules": null,
     "gray_rules": [
-        {
+         {
             "include": false,
             "exclude": true,
             "db": "chuangliang_ad",

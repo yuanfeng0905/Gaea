@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"strconv"
 	"strings"
@@ -243,6 +244,7 @@ func NewNamespace(namespaceConfig *models.Namespace, proxyDatacenter string) (*N
 	}
 
 	namespace.grayRouter = router.NewGrayRouter(namespaceConfig)
+	slog.Info("init gray router of namespace: %s, gray rules: %v", namespace.name, namespace.grayRouter.GetAllRules())
 
 	// init global sequences config
 	// 目前只支持基于mysql的序列号

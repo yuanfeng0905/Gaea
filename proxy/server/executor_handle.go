@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"log/slog"
 	"runtime"
 	"strings"
 	"time"
@@ -163,6 +164,7 @@ func (se *SessionExecutor) doQuery(reqCtx *util.RequestContext, sql string) (*my
 	}
 
 	// get plan 会生成 tokens，需要放在 checkExecuteFromSlave 前面
+	slog.Info(fmt.Sprintf("get plan for ns:%s, sql: %s, db: %s", se.GetNamespace().GetName(), sql, db))
 	p, err := se.getPlan(reqCtx, se.GetNamespace(), db, sql, true)
 	if err != nil {
 		return nil, fmt.Errorf("get plan error, db: %s, origin sql: %s, err: %v", db, sql, err)
@@ -597,7 +599,6 @@ func (se *SessionExecutor) handleFieldList(data []byte) ([]*mysql.Field, error) 
 		return nil, err
 	}
 	defer se.recycleBackendConn(pc)
-
 	phyDB, err := se.GetNamespace().GetDefaultPhyDB(se.GetDatabase())
 	if err != nil {
 		return nil, err

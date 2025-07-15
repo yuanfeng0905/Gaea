@@ -108,6 +108,7 @@ type LinkedRule struct {
 }
 
 type GrayRule struct {
+	Table      string
 	Include    bool
 	Exclude    bool
 	GrayColumn string // 灰度列
@@ -137,6 +138,7 @@ func NewGrayRouter(cfg *models.Namespace) *GrayRouter {
 	for _, i := range cfg.GrayRules {
 		// create gray rule
 		grayRule := &GrayRule{
+			Table:      strings.ToLower(i.Table),
 			Include:    i.Include,
 			Exclude:    i.Exclude,
 			GrayColumn: i.Column,

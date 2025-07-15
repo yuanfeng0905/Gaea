@@ -236,12 +236,19 @@ func BuildPlan(stmt ast.StmtNode, phyDBs map[string]string, db, sql string, rout
 	return CreateUnshardPlan(stmt, phyDBs, db, unshardTables)
 }
 
-func generateGrayCompression(rule *router.GrayRule, whereExpr ast.ExprNode) (ast.ExprNode, error) {
+func generateGrayCompression(rule *router.GrayRule, alias map[string]string) (ast.ExprNode, error) {
+	var lr *ast.ColumnNameExpr
+	if t, ok := alias[rule.Table]; ok {
+		lr = &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn), Table: model.NewCIStr(t)}}
+	} else {
+		lr = &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}}
+	}
+
 	if rule.Exclude {
 		if len(rule.GrayValues) == 1 {
 			return &ast.BinaryOperationExpr{
 				Op: opcode.NE,
-				L:  &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				L:  lr,
 				R:  ast.NewValueExpr(rule.GrayValues[0]),
 			}, nil
 		} else if len(rule.GrayValues) > 1 {
@@ -250,7 +257,7 @@ func generateGrayCompression(rule *router.GrayRule, whereExpr ast.ExprNode) (ast
 				lst = append(lst, ast.NewValueExpr(v))
 			}
 			expr := &ast.PatternInExpr{
-				Expr: &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				Expr: lr,
 				List: lst,
 				Not:  true, // 将算子改写为 NOT IN
 			}
@@ -260,7 +267,7 @@ func generateGrayCompression(rule *router.GrayRule, whereExpr ast.ExprNode) (ast
 		if len(rule.GrayValues) == 1 {
 			return &ast.BinaryOperationExpr{
 				Op: opcode.EQ,
-				L:  &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				L:  lr,
 				R:  ast.NewValueExpr(rule.GrayValues[0]),
 			}, nil
 		} else if len(rule.GrayValues) > 1 {
@@ -270,7 +277,7 @@ func generateGrayCompression(rule *router.GrayRule, whereExpr ast.ExprNode) (ast
 				lst = append(lst, ast.NewValueExpr(v))
 			}
 			expr := &ast.PatternInExpr{
-				Expr: &ast.ColumnNameExpr{Name: &ast.ColumnName{Name: model.NewCIStr(rule.GrayColumn)}},
+				Expr: lr,
 				List: lst,
 			}
 
@@ -280,10 +287,49 @@ func generateGrayCompression(rule *router.GrayRule, whereExpr ast.ExprNode) (ast
 	return nil, fmt.Errorf("gray rule must be include or exclude")
 }
 
+type tableAliasVistor struct {
+	alias map[string]string // key = table name, value = alias
+}
+
+func newTableAliasVistor() *tableAliasVistor {
+	return &tableAliasVistor{
+		alias: make(map[string]string),
+	}
+}
+
+func (v *tableAliasVistor) GetTableAlias() map[string]string {
+	return v.alias
+}
+
+func (v *tableAliasVistor) Enter(n ast.Node) (node ast.Node, skipChildren bool) {
+	switch nn := n.(type) {
+	case *ast.TableSource:
+		if nn.AsName.String() != "" {
+			if tableName, ok := nn.Source.(*ast.TableName); ok {
+				v.alias[tableName.Name.String()] = nn.AsName.String() // 如果有别名, 则使用别名
+			}
+		}
+	case *ast.ColumnNameExpr:
+		refTable := nn.Name.Table.String()
+		if refTable != "" {
+			if _, ok := v.alias[refTable]; !ok {
+				v.alias[refTable] = refTable // 如果没有别名, 则使用原始表名
+			}
+		}
+	}
+	return n, false
+}
+
+func (v *tableAliasVistor) Leave(n ast.Node) (node ast.Node, ok bool) {
+	return n, true
+}
+
 func buildGrayPlan(stmt ast.StmtNode, db string, phyDBs map[string]string, unshardTables []*ast.TableName, rule *router.GrayRule) (Plan, error) {
+	tav := newTableAliasVistor()
+	stmt.Accept(tav)
 	switch s := stmt.(type) {
 	case *ast.SelectStmt:
-		expr, err := generateGrayCompression(rule, s.Where)
+		expr, err := generateGrayCompression(rule, tav.GetTableAlias())
 		if err != nil {
 			return nil, fmt.Errorf("generate gray compression error: %v", err)
 		}
