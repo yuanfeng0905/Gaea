@@ -85,7 +85,7 @@ package-via-docker: package-base
 			--tag $(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE) \
 			-f cmd/$(APP_NAME)/deployment/Dockerfile bin) && docker push $(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE)
 
-deploy-via-k8s:
+deploy-via-k8s: package-via-docker
 	kubectl apply -k cmd/$(APP_NAME)/deployment/k8s && kubectl -n wf set image deployment/$(APP_NAME) app=$(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE)
 
 publish-via-docker:
