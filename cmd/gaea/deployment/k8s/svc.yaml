@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gaea-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: gaea
+  ports:
+    - name: mysql-proxy
+      protocol: TCP
+      port: 13306
+      targetPort: 13306
+    - name: local
+      protocol: TCP
+      port: 13307
+      targetPort: 13307
