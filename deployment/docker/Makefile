@@ -85,6 +85,9 @@ package-via-docker: package-base
 			--tag $(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE) \
 			-f cmd/$(APP_NAME)/deployment/Dockerfile bin)
 
+deploy-via-k8s:
+	kubectl apply -k cmd/$(APP_NAME)/deployment/k8s && kubectl -n wf set image deployment/$(APP_NAME) app=$(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE)
+
 publish-via-docker:
 	$(MAKE_PARALLEL) app-via-docker-linux-amd64 \
 		app-via-docker-linux-arm \

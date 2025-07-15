@@ -27,6 +27,9 @@ gaea-windows-amd64-prod:
 package-gaea:
 	APP_NAME=gaea $(MAKE) package-via-docker
 
+deploy-gaea:
+	APP_NAME=gaea $(MAKE) deploy-via-k8s
+
 package-gaea-pure:
 	APP_NAME=gaea $(MAKE) package-via-docker-pure
 

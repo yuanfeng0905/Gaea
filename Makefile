@@ -40,6 +40,9 @@ package: \
 	package-gaea \
 	package-gaea-cc 
 
+deploy:
+	deploy-gaea
+
 
 publish-final-images:
 	PKG_TAG=$(TAG) APP_NAME=toutiao $(MAKE) publish-via-docker-from-rc && \
