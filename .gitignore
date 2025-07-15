@@ -1,6 +1,7 @@
 vendor
 y.output
 bin
+gocache-for-docker/
 logs
 .coverage.*
 .vscode

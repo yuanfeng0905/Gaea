@@ -1,60 +1,140 @@
-ROOT:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-GOOS ?= linux
-GOARCH ?= $(shell go env GOARCH)
-GOENV  := CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH)
-GO     := $(GOENV) go
-GAEA_OUT:=$(ROOT)/bin/gaea
-GAEA_CC_OUT:=$(ROOT)/bin/gaea-cc
-PKG:=$(shell go list -m)
+PKG_PREFIX := github.com/XiaoMi/Gaea
 
-.PHONY: all build gaea gaea-cc parser clean test build_with_coverage
-all: build test
+MAKE_CONCURRENCY ?= $(shell getconf _NPROCESSORS_ONLN)
+MAKE_PARALLEL := $(MAKE) -j $(MAKE_CONCURRENCY)
+DATEINFO_TAG ?= $(shell date -u +'%Y%m%d-%H%M%S')
+BUILDINFO_TAG ?= $(shell echo $$(git describe --long --all | tr '/' '-')$$( \
+	      git diff-index --quiet HEAD -- || echo '-dirty-'$$(git diff-index -u HEAD | openssl sha1 | cut -d' ' -f2 | cut -c 1-8)))
 
-build: parser gaea gaea-cc
+PKG_TAG ?= $(shell git tag -l --points-at HEAD)
+ifeq ($(PKG_TAG),)
+PKG_TAG := $(BUILDINFO_TAG)
+endif
 
-gaea-local:
-	CGO_ENABLED=0 go build -o $(GAEA_OUT) $(shell bash gen_ldflags.sh $(GAEA_OUT) $(PKG)/core $(PKG)/cmd/gaea)
+EXTRA_DOCKER_TAG_SUFFIX ?= EXTRA_DOCKER_TAG_SUFFIX
 
-gaea:
-	$(GO) build -o $(GAEA_OUT) $(shell bash gen_ldflags.sh $(GAEA_OUT) $(PKG)/core $(PKG)/cmd/gaea)
+#GO_BUILDINFO = -X 'pkg.mobgi.com/cl_workflow_core/sdk/buildinfo.Version=$(APP_NAME)-$(DATEINFO_TAG)-$(BUILDINFO_TAG)'
+GO_BUILDINFO = ""
+TAR_OWNERSHIP ?= --owner=1000 --group=1000
 
-gaea-cc:
-	$(GO) build -o $(GAEA_CC_OUT) $(shell bash gen_ldflags.sh $(GAEA_CC_OUT) $(PKG)/core $(PKG)/cmd/gaea-cc)
+.PHONY: $(MAKECMDGOALS)
 
-parser:
-	cd parser && make && cd ..
+#include .env
+include cmd/*/Makefile
+include deployment/*/Makefile
+
+
+all: \
+	gaea-prod \
+	gaea-cc-prod 
+
 
 clean:
-	@rm -rf bin
-	@rm -f .coverage.out .coverage.html
+	rm -rf bin/*
 
-ALL_CHECKS = EOF spelling
-check: $(addprefix check-,$(ALL_CHECKS))
+publish: \
+	publish-gaea \
+	publish-gaea-cc 
 
-check-%:
-	./hack/verify-$*.sh
+package: \
+	package-gaea \
+	package-gaea-cc 
+
+
+publish-final-images:
+	PKG_TAG=$(TAG) APP_NAME=toutiao $(MAKE) publish-via-docker-from-rc && \
+	PKG_TAG=$(TAG) APP_NAME=gw $(MAKE) publish-via-docker-from-rc && \
+	PKG_TAG=$(TAG) $(MAKE) publish-latest
+
+publish-latest:
+	PKG_TAG=$(TAG) APP_NAME=toutiao $(MAKE) publish-via-docker-latest && \
+	PKG_TAG=$(TAG) APP_NAME=gw $(MAKE) publish-via-docker-latest 
+
+
+
+fmt:
+	gofmt -l -w -s ./pkg
+	gofmt -l -w -s ./app
+
+
+vet:
+	GOEXPERIMENT=synctest go vet ./pkg/...
+	go vet ./app/...
+
+
+check-all: fmt vet golangci-lint govulncheck
+
+clean-checkers: remove-golangci-lint remove-govulncheck
 
 test:
-	go test -gcflags="all=-l -N" -coverprofile=.coverage.out `go list ./...` -short
-	go tool cover -func=.coverage.out -o .coverage.func
-	tail -1 .coverage.func
-	go tool cover -html=.coverage.out -o .coverage.html
+	GOEXPERIMENT=synctest go test ./lib/... ./app/...
 
-e2e-test: gaea gaea-cc
-	cp bin/gaea bin/gaea-cc tests/e2e/cmd/
-	./hack/e2e-mysql5.sh
-	./hack/ginkgo-run-mysql5.sh
+test-race:
+	GOEXPERIMENT=synctest go test -race ./lib/... ./app/...
 
-e2e-test-mysql8: gaea gaea-cc
-	cp bin/gaea bin/gaea-cc tests/e2e/cmd/
-	./hack/e2e-mysql8.sh
-	./hack/ginkgo-run-mysql8.sh
+test-pure:
+	GOEXPERIMENT=synctest CGO_ENABLED=0 go test ./lib/... ./app/...
 
-integrate_test:
-	go test -timeout 30m -coverprofile=.integrate_coverage.out ./... -run ^TestIntegration$
-	go tool cover -func=.integrate_coverage.out -o .integrate_coverage.func
-	tail -1 .integrate_coverage.func
-	go tool cover -html=.integrate_coverage.out -o .integrate_coverage.html
+test-full:
+	GOEXPERIMENT=synctest go test -coverprofile=coverage.txt -covermode=atomic ./lib/... ./app/...
 
-build_with_coverage:
-	go test -c cmd/gaea/main.go cmd/gaea/main_test.go -coverpkg ./... -covermode=count -o bin/gaea
+test-full-386:
+	GOEXPERIMENT=synctest GOARCH=386 go test -coverprofile=coverage.txt -covermode=atomic ./lib/... ./app/...
+
+integration-test: victoria-metrics vmagent vmalert vmauth vmctl vmbackup vmrestore
+	go test ./apptest/... -skip="^TestCluster.*"
+
+benchmark:
+	GOEXPERIMENT=synctest go test -bench=. ./lib/...
+	go test -bench=. ./app/...
+
+benchmark-pure:
+	GOEXPERIMENT=synctest CGO_ENABLED=0 go test -bench=. ./lib/...
+	CGO_ENABLED=0 go test -bench=. ./app/...
+
+vendor-update:
+	go mod tidy -compat=1.24
+	go mod vendor
+
+app-local:
+	CGO_ENABLED=0 go build $(RACE) -ldflags "$(GO_BUILDINFO)" -o bin/$(APP_NAME)$(RACE) $(PKG_PREFIX)/cmd/$(APP_NAME)
+
+app-local-pure:
+	CGO_ENABLED=0 go build $(RACE) -ldflags "$(GO_BUILDINFO)" -o bin/$(APP_NAME)-pure$(RACE) $(PKG_PREFIX)/cmd/$(APP_NAME)
+
+app-local-goos-goarch:
+	CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(RACE) -ldflags "$(GO_BUILDINFO)" -o bin/$(APP_NAME)-$(GOOS)-$(GOARCH)$(RACE) $(PKG_PREFIX)/cmd/$(APP_NAME)
+
+app-local-windows-goarch:
+	CGO_ENABLED=0 GOOS=windows GOARCH=$(GOARCH) go build $(RACE) -ldflags "$(GO_BUILDINFO)" -o bin/$(APP_NAME)-windows-$(GOARCH)$(RACE).exe $(PKG_PREFIX)/cmd/$(APP_NAME)
+
+quicktemplate-gen: install-qtc
+	qtc
+
+install-qtc:
+	which qtc || go install github.com/valyala/quicktemplate/qtc@latest
+
+
+golangci-lint: install-golangci-lint
+	GOEXPERIMENT=synctest golangci-lint run
+
+install-golangci-lint:
+	which golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v1.64.7
+
+remove-golangci-lint:
+	rm -rf `which golangci-lint`
+
+govulncheck: install-govulncheck
+	govulncheck ./...
+
+install-govulncheck:
+	which govulncheck || go install golang.org/x/vuln/cmd/govulncheck@latest
+
+remove-govulncheck:
+	rm -rf `which govulncheck`
+
+install-wwhrd:
+	which wwhrd || go install github.com/frapposelli/wwhrd@latest
+
+check-licenses: install-wwhrd
+	wwhrd check -f .wwhrd.yml
