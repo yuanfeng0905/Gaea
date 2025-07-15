@@ -5,4 +5,4 @@ EXPOSE 8427
 
 ENTRYPOINT ["/gaea-prod"]
 ARG src_binary=non-existing
-COPY $src_binary ./gw-prod
+COPY $src_binary ./gaea-prod
