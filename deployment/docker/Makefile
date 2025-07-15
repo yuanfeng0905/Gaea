@@ -83,7 +83,7 @@ package-via-docker: package-base
 			--label "org.opencontainers.image.version=$(PKG_TAG)" \
 			--label "org.opencontainers.image.created=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")" \
 			--tag $(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE) \
-			-f cmd/$(APP_NAME)/deployment/Dockerfile bin)
+			-f cmd/$(APP_NAME)/deployment/Dockerfile bin) || docker push $(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE)
 
 deploy-via-k8s:
 	kubectl apply -k cmd/$(APP_NAME)/deployment/k8s && kubectl -n wf set image deployment/$(APP_NAME) app=$(DOCKER_NAMESPACE)/$(APP_NAME):$(PKG_TAG)$(APP_SUFFIX)$(RACE)
