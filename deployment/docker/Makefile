@@ -1,7 +1,7 @@
 # All these commands must run from repository root.
 
 DOCKER_REGISTRIES ?= docker.io quay.io
-DOCKER_NAMESPACE ?= registry.cn-hongkong.aliyuncs.com/person_infra
+DOCKER_NAMESPACE ?= hub.mobgi.com/infra
 
 ROOT_IMAGE ?= registry.cn-hongkong.aliyuncs.com/person_infra/alpine:3.22.0
 ROOT_IMAGE_SCRATCH ?= scratch
