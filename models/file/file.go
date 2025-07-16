@@ -16,6 +16,8 @@ package file
 
 import (
 	"errors"
+	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -98,13 +100,15 @@ func (c *Client) Read(file string) ([]byte, error) {
 // List list path, return slice of all files
 func (c *Client) List(path string) ([]string, error) {
 	r := make([]string, 0)
+	slog.Info(fmt.Sprintf("list files in path: %s", path))
 	files, err := os.ReadDir(path)
 	if err != nil {
 		return r, err
 	}
 
 	for _, f := range files {
-		if !f.IsDir() {
+		if !f.IsDir() && f.Name() != "..data" {
+			slog.Info(fmt.Sprintf("found file: %s", f.Name()))
 			r = append(r, f.Name())
 		}
 	}
