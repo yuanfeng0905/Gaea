@@ -104,7 +104,9 @@ func (c *Client) List(path string) ([]string, error) {
 	}
 
 	for _, f := range files {
-		r = append(r, f.Name())
+		if !f.IsDir() {
+			r = append(r, f.Name())
+		}
 	}
 
 	return r, nil
