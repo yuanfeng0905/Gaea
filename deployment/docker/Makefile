@@ -10,7 +10,7 @@ CERTS_IMAGE := registry.cn-hongkong.aliyuncs.com/person_infra/alpine:3.22.0
 # golang基础构建环境
 GO_BUILDER_IMAGE := registry.cn-hongkong.aliyuncs.com/person_infra/golang:1.24.5-alpine
 BUILDER_IMAGE := local/builder:2.0.0-$(shell echo $(GO_BUILDER_IMAGE) | tr :/ __)-1
-BASE_IMAGE := local/base:1.1.4-$(shell echo $(ROOT_IMAGE) | tr :/ __)
+BASE_IMAGE := local/base:1.1.6-$(shell echo $(ROOT_IMAGE) | tr :/ __)
 DOCKER ?= docker
 DOCKER_RUN ?= $(DOCKER) run
 DOCKER_BUILD ?= $(DOCKER) build
